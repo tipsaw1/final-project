@@ -1,37 +1,30 @@
 from settings import *
 import classes.enemy_class as enemy
 import classes.obstacle_class as obstacle
-# Different rooms/screens
-print(SCREEN_W)
 
-class Level:
-    
+# Different rooms/screens
+class Level(pygame.sprite.Sprite):
     def __init__(self, map_grid, image):
+        super().__init__()
         # Background image
-        self.image = pygame.transform.scale(image, (SCREEN_W,SCREEN_H))
+        # Width and height is the width/height of the map
+        # Subtract 20 for smoothness while moving
+        height = len(map_grid)*TILESIZE
+        width = len(map_grid[0])*TILESIZE
+        self.image = pygame.transform.scale(image, (width,height))
+        print(width, height)
+        self.rect = self.image.get_rect(topleft = (0,0))
+        # Stores all sprites in this room (including the player)
+        self.all_sprites = OffsetGroup()
         # Stores all the enemies in this room
-        self.enemy_sprites = pygame.sprite.Group()
+        self.enemy_sprites = OffsetGroup()
         # Stores all the walls/items with collisions
-        self.obstacle_sprites = pygame.sprite.Group()
+        self.obstacle_sprites = OffsetGroup()
         # Stores the map grid that will be used to draw the screen
         self.map = map_grid
-        # x and y offset
-        self.x = 0
-        self.y = 0
         
         #Loads the map
         self.load_map()
-    
-    # Draws the enemies and obstacles
-    def draw(self, surface):
-        surface.blit(self.image, (self.x,self.y))
-        self.enemy_sprites.draw(surface)
-        self.obstacle_sprites.draw(surface)
-        
-    def update(self):
-        # Updates the obstacles and enemies
-        self.enemy_sprites.update()
-        self.obstacle_sprites.update()
         
     def load_map(self):
         # Adds the enemies and obstacles into their group

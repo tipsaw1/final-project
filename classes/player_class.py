@@ -11,13 +11,13 @@ class Player(pygame.sprite.Sprite):
     # Rect is positioned in the center of the screen
     rect = image.get_rect(center = (SCREEN_W//2, SCREEN_H//2))
     # Speed is 10
-    speed = 10
+    speed = 5
     # Hp and max hp start at 50
     hp = 50
     max_hp = 50
     
     def __init__(self, level):
-        super().__init__(player_sprite)
+        super().__init__(player_sprite, level.all_sprites)
         # screen is stored
         self.level = level
         # dx and dy are 0
@@ -38,46 +38,37 @@ class Player(pygame.sprite.Sprite):
             self.dx -= 1
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             self.dx += 1
-        if keys[pygame.K_SPACE]:
-            print(self.level.obstacle_sprites.sprites()[0].rect.center, self.rect.center)
-            
+        
     def move(self):
-        # Move the screen in the opposite direction of the player
+        # Moves the player
         if self.dx != 0 or self.dy != 0:
             self.dx, self.dy = calculate_movement(self.dx, self.dy, self.speed)
-        self.level.x -= self.dx
+        self.rect.x += self.dx
         self.check_collisions("x")
-        self.level.y -= self.dy
+        self.rect.y += self.dy
         self.check_collisions("y")
         
         # Reset dx and dy
         self.dx = 0
         self.dy = 0
-        
+    
     def check_collisions(self, direction):
-        # Returns any sprite that the player collides with within the level's list of obstacles
-        collide = pygame.sprite.spritecollideany(self, self.level.obstacle_sprites)
-        # If you collided with anything:
-        if collide:
-            # Collisions for moving left and right
+        # Returns a sprite if you collide with it
+        # Returns None if you aren't colliding with anything
+        collision = pygame.sprite.spritecollideany(self, self.level.all_sprites)
+
+        # If you are colliding with something that isn't yourself
+        if collision and collision != self:
             if direction == "x":
-                distance = 0
-                # If moving right and colliding
                 if self.dx > 0:
-                    distance = collide.rect.left - self.rect.right
-                    
-                # If moving left and collliding
+                    self.rect.right = collision.rect.left
+
                 if self.dx < 0:
-                    distance = self.rect.left - collide.rect.right 
-                    
-                self.level.x += distance
-            # Collisions for moving up and down
+                    self.rect.left = collision.rect.right
+
             if direction == "y":
-                distance = 0
-                # If moving up and colliding
                 if self.dy < 0:
-                    distance = self.rect.top - collide.rect.bottom 
-                # If moving down and
+                    self.rect.top = collision.rect.bottom
+
                 if self.dy > 0:
-                    distance = collide.rect.top - self.rect.bottom
-                self.level.y += distance
+                    self.rect.bottom = collision.rect.top
