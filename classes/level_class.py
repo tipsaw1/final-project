@@ -8,11 +8,9 @@ class Level(pygame.sprite.Sprite):
         super().__init__()
         # Background image
         # Width and height is the width/height of the map
-        # Subtract 20 for smoothness while moving
         height = len(map_grid)*TILESIZE
         width = len(map_grid[0])*TILESIZE
         self.image = pygame.transform.scale(image, (width,height))
-        print(width, height)
         self.rect = self.image.get_rect(topleft = (0,0))
         # Stores all sprites in this room (including the player)
         self.all_sprites = OffsetGroup()
@@ -39,7 +37,12 @@ class Level(pygame.sprite.Sprite):
             y_pos += TILESIZE
                 
     def map_key(self, letter, pos):
+        # Creates wall obstacle
         if letter == "X":
-            obstacle.Obstacle(self, img.tree_img_1, pos)
+            obstacle.Obstacle(self, img.wall_img_1, pos)
+        
+        # Creates default enemy (will probably change when we add subclasses)
+        if letter == "!":
+            enemy.Enemy(self, img.enemy_img_1, pos)
             
         

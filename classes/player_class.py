@@ -72,3 +72,7 @@ class Player(pygame.sprite.Sprite):
 
                 if self.dy > 0:
                     self.rect.bottom = collision.rect.top
+                    
+    def take_damage(self, damage):
+        # Will probably change to reflect armor/defense
+        self.hp -= self.damage

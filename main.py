@@ -1,7 +1,6 @@
 from settings import *
 import classes.player_class as player
 import classes.level_class as level
-import classes.weapon_class as weapon
 
 screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
 

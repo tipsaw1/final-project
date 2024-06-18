@@ -9,8 +9,8 @@ level_1_img = pygame.Surface((50,50))
 level_1_img.fill("navajowhite2")
 
 # tree image (temporarily a green square)
-tree_img_1 = pygame.Surface((50,50))
-tree_img_1.fill("forestgreen")
+wall_img_1 = pygame.Surface((50,50))
+wall_img_1.fill("forestgreen")
 
 # Enemy image (temporarily a red square)
 enemy_img_1 = pygame.Surface((50, 50))
