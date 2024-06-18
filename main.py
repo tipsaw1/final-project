@@ -14,7 +14,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-    screen.fill("white")
+    screen.fill(white)
     player_sprite.sprite.level.update()
     player_sprite.sprite.level.draw(screen)
     player_sprite.draw(screen)
