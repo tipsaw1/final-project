@@ -6,7 +6,7 @@ print('imported enemy class')
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, level):
-        super().__init__(level.enemy_sprites)
+        super().__init__(level.enemy_sprite)
         self.image = pygame.Surface((30, 30))  # Replace with actual enemy image
         self.image.fill((255, 0, 0))  # Red color (for illustration)
         self.rect = self.image.get_rect()
