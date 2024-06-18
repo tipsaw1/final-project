@@ -4,6 +4,8 @@ import classes.obstacle_class as obstacle
 
 # Different rooms/screens
 class Level(pygame.sprite.Sprite):
+    
+    
     def __init__(self, map_grid, image):
         super().__init__()
         # Background image
@@ -58,13 +60,17 @@ class Level(pygame.sprite.Sprite):
         # Creates default enemy (will probably change when we add subclasses)
         if letter == "!":
             enemy.Enemy(self, img.enemy_img_1, pos)
-    
-    # Set a single adjacent room
-    def set_adjacent(self, adjacent, value):
-        self.adjacents[adjacent] = value
             
-    # Set every adjacent room
-    def set_adjacents(self, up, down, left, right):
+    # Set adjacent rooms
+    def set_adjacents(self, up = None, down = None, left = None, right = None):
+        if not up:
+            up = self.adjacents["up"]
+        if not down:
+            down = self.adjacents["down"]
+        if not left:
+            left = self.adjacents["left"]
+        if not right:
+            right = self.adjacents["right"]
         self.adjacents["up"] = up
         self.adjacents["down"] = down
         self.adjacents["left"] = left
