@@ -61,8 +61,10 @@ class Level(pygame.sprite.Sprite):
         
         # Creates default enemy (will probably change when we add subclasses)
         if letter == "!":
-            enemy.Melee_enemy("test", self, img.enemy_img_1, pos)
-            
+            enemy.Melee_enemy("test melee", self, img.enemy_img_1, pos, 10, 50, 7)
+        
+        if letter == ">":
+            enemy.Ranged_enemy("test ranged", self, img.enemy_img_2, pos, 15, 30, 7)
             
     # Set adjacent rooms
     def set_adjacents(self, up = None, down = None, left = None, right = None):
