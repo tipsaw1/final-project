@@ -40,6 +40,8 @@ class Level(pygame.sprite.Sprite):
         # Stores all the walls/items with collisions
         self.obstacle_sprites = OffsetGroup()
         
+        self.bullet_sprites = OffsetGroup()
+        
         # Adds the enemies and obstacles into their group
         # y position = the y offset
         y_pos = 0
@@ -59,7 +61,8 @@ class Level(pygame.sprite.Sprite):
         
         # Creates default enemy (will probably change when we add subclasses)
         if letter == "!":
-            enemy.Enemy(self, img.enemy_img_1, pos)
+            enemy.Melee_enemy("test", self, img.enemy_img_1, pos)
+            
             
     # Set adjacent rooms
     def set_adjacents(self, up = None, down = None, left = None, right = None):

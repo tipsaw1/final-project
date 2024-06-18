@@ -1,4 +1,5 @@
 from settings import *
+import classes.bullet_class as bullet
 
 class Player(pygame.sprite.Sprite):
     # Equipped items are by default none
@@ -7,17 +8,22 @@ class Player(pygame.sprite.Sprite):
     # Size is half a tile
     size = TILESIZE
     # Image is scaled to size
-    image = pygame.transform.scale(img.player_img, (size, size))
-    # Rect is positioned in the center of the screen
-    rect = image.get_rect(center = (SCREEN_W//2, SCREEN_H//2))
+    default_image = pygame.transform.scale(img.player_img, (size, size))
+    hurt_image = pygame.transform.scale(img.player_hurt_img, (size,size))
     # Speed is 10
-    speed = 5
+    speed = 10
     # Hp and max hp start at 50
     hp = 50
     max_hp = 50
     
+    hurt_cooldown = 1500
+    last_hurt = -hurt_cooldown
+    
     def __init__(self, level):
         super().__init__(player_sprite)
+        self.image = self.default_image
+        # Rect is positioned in the center of the screen
+        self.rect = self.image.get_rect(center = (SCREEN_W//2, SCREEN_H//2))
         # screen is stored
         self.level = level
         # dx and dy are 0
@@ -25,6 +31,8 @@ class Player(pygame.sprite.Sprite):
         self.level.load_map()
         
     def update(self):
+        if pygame.time.get_ticks() - self.last_hurt >= 150:
+            self.image = self.default_image
         self.check_keys()
         self.move()
         self.check_borders()
@@ -32,6 +40,9 @@ class Player(pygame.sprite.Sprite):
     def check_keys(self):
         # Store keys and change dx/dy
         keys = pygame.key.get_pressed()
+        mouseX, mouseY = pygame.mouse.get_pos()
+        offset_mouseX = mouseX+level_sprite.sprite.all_sprites.offset.x
+        offset_mouseY = mouseY+level_sprite.sprite.all_sprites.offset.y
         if keys[pygame.K_UP] or keys[pygame.K_w]:
             self.dy -= 1
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
@@ -40,6 +51,9 @@ class Player(pygame.sprite.Sprite):
             self.dx -= 1
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             self.dx += 1
+        if keys[pygame.K_SPACE]:
+            if self.equipped_weapon:
+                self.equipped_weapon.attack((offset_mouseX, offset_mouseY))
         
     def move(self):
         # Moves the player
@@ -58,23 +72,26 @@ class Player(pygame.sprite.Sprite):
     def check_collisions(self, direction):
         # Returns a sprite if you collide with it
         # Returns None if you aren't colliding with anything
-        collisions = pygame.sprite.spritecollide(self, self.level.all_sprites, False)
+        collisions = pygame.sprite.spritecollide(self, self.level.obstacle_sprites, False)
         # If you are colliding with something that isn't yourself
         for collision in collisions:
-            if collision != self:
-                if direction == "x":
-                    if self.dx > 0:
-                        self.rect.right = collision.rect.left
+            if direction == "x":
+                if self.dx > 0:
+                    self.rect.right = collision.rect.left
 
-                    if self.dx < 0:
-                        self.rect.left = collision.rect.right
+                if self.dx < 0:
+                    self.rect.left = collision.rect.right
 
-                if direction == "y":
-                    if self.dy < 0:
-                        self.rect.top = collision.rect.bottom
+            if direction == "y":
+                if self.dy < 0:
+                    self.rect.top = collision.rect.bottom
 
-                    if self.dy > 0:
-                        self.rect.bottom = collision.rect.top
+                if self.dy > 0:
+                    self.rect.bottom = collision.rect.top
+                        
+            #if collision in self.level.enemy_sprites:
+                #collision.damage_player()
+                #print(self.hp)
                     
     def check_borders(self):
         # If you go past the left side of the screen and there is
@@ -108,4 +125,9 @@ class Player(pygame.sprite.Sprite):
     
     def take_damage(self, damage):
         # Will probably change to reflect armor/defense
-        self.hp -= self.damage
+        if pygame.time.get_ticks() - self.last_hurt >= self.hurt_cooldown:
+            self.hp -= damage
+            self.image = self.hurt_image
+            self.last_hurt = pygame.time.get_ticks()
+            
+    
