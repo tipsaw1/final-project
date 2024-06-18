@@ -90,4 +90,4 @@ class OffsetGroup(pygame.sprite.Group):
             surface.blit(sprite.image, sprite.rect.topleft-self.offset)
             
 # Level sprite
-level_sprite = OffsetGroup()
+level_sprite = pygame.sprite.GroupSingle()

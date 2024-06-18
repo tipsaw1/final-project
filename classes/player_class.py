@@ -5,7 +5,7 @@ class Player(pygame.sprite.Sprite):
     equipped_weapon = None
     equipped_armor = None
     # Size is half a tile
-    size = TILESIZE//2
+    size = TILESIZE
     # Image is scaled to size
     image = pygame.transform.scale(img.player_img, (size, size))
     # Rect is positioned in the center of the screen
@@ -17,15 +17,17 @@ class Player(pygame.sprite.Sprite):
     max_hp = 50
     
     def __init__(self, level):
-        super().__init__(player_sprite, level.all_sprites)
+        super().__init__(player_sprite)
         # screen is stored
         self.level = level
         # dx and dy are 0
         self.dx, self.dy = 0, 0
+        self.level.load_map()
         
     def update(self):
         self.check_keys()
         self.move()
+        self.check_borders()
         
     def check_keys(self):
         # Store keys and change dx/dy
@@ -43,6 +45,7 @@ class Player(pygame.sprite.Sprite):
         # Moves the player
         if self.dx != 0 or self.dy != 0:
             self.dx, self.dy = calculate_movement(self.dx, self.dy, self.speed)
+            
         self.rect.x += self.dx
         self.check_collisions("x")
         self.rect.y += self.dy
@@ -55,24 +58,54 @@ class Player(pygame.sprite.Sprite):
     def check_collisions(self, direction):
         # Returns a sprite if you collide with it
         # Returns None if you aren't colliding with anything
-        collision = pygame.sprite.spritecollideany(self, self.level.all_sprites)
-
+        collisions = pygame.sprite.spritecollide(self, self.level.all_sprites, False)
         # If you are colliding with something that isn't yourself
-        if collision and collision != self:
-            if direction == "x":
-                if self.dx > 0:
-                    self.rect.right = collision.rect.left
+        for collision in collisions:
+            if collision != self:
+                if direction == "x":
+                    if self.dx > 0:
+                        self.rect.right = collision.rect.left
 
-                if self.dx < 0:
-                    self.rect.left = collision.rect.right
+                    if self.dx < 0:
+                        self.rect.left = collision.rect.right
 
-            if direction == "y":
-                if self.dy < 0:
-                    self.rect.top = collision.rect.bottom
+                if direction == "y":
+                    if self.dy < 0:
+                        self.rect.top = collision.rect.bottom
 
-                if self.dy > 0:
-                    self.rect.bottom = collision.rect.top
+                    if self.dy > 0:
+                        self.rect.bottom = collision.rect.top
                     
+    def check_borders(self):
+        # If you go past the left side of the screen and there is
+        # another screen to the left, you go to the screen to the left
+        if self.rect.centerx < 0 and self.level.adjacents["left"]:
+            self.level = self.level.adjacents["left"]
+            self.level.load_map()
+            self.rect.right = self.level.rect.right
+            
+        # If you go past the right side of the screen and there is
+        # another screen to the right, you go to the screen to the right
+        if self.rect.centerx > self.level.rect.right and self.level.adjacents["right"]:
+            self.level = self.level.adjacents["right"]
+            self.level.load_map()
+            self.rect.left = self.level.rect.left
+        
+        # If you go past the top side of the screen and there is
+        # another screen above, you go to the screen above
+        if self.rect.centery < 0 and self.level.adjacents["up"]:
+            self.level = self.level.adjacents["up"]
+            self.level.load_map()
+            self.rect.bottom = self.level.rect.bottom
+            
+        # If you go past the bottom side of the screen and there is
+        # another screen below, you go to the screen below
+        if self.rect.centery > self.level.rect.bottom and self.level.adjacents["down"]:
+            self.level = self.level.adjacents["down"]
+            self.level.load_map()
+            self.rect.top = self.level.rect.top
+            
+    
     def take_damage(self, damage):
         # Will probably change to reflect armor/defense
         self.hp -= self.damage

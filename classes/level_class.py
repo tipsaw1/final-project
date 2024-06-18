@@ -7,24 +7,37 @@ class Level(pygame.sprite.Sprite):
     def __init__(self, map_grid, image):
         super().__init__()
         # Background image
-        # Width and height is the width/height of the map
-        height = len(map_grid)*TILESIZE
-        width = len(map_grid[0])*TILESIZE
-        self.image = pygame.transform.scale(image, (width,height))
+        self.image = image
+        # Stores the map grid that will be used to draw the screen
+        self.map = map_grid
+        # Stores the adjacent levels
+        self.adjacents = {
+            "up": None,
+            "down": None,
+            "left": None,
+            "right": None
+        }
+    
+        
+    #Loads the map
+    def load_map(self):
+        # Sets up rect and image and etc
+        height = len(self.map)*TILESIZE
+        width = len(self.map[0])*TILESIZE
+        self.image = pygame.transform.scale(self.image, (width,height))
         self.rect = self.image.get_rect(topleft = (0,0))
+        
+        # Puts current level into the level sprite group
+        # Level sprite is a GroupSingle()
+        level_sprite.add(self)
+        
         # Stores all sprites in this room (including the player)
-        self.all_sprites = OffsetGroup()
+        self.all_sprites = OffsetGroup(player_sprite.sprite)
         # Stores all the enemies in this room
         self.enemy_sprites = OffsetGroup()
         # Stores all the walls/items with collisions
         self.obstacle_sprites = OffsetGroup()
-        # Stores the map grid that will be used to draw the screen
-        self.map = map_grid
         
-        #Loads the map
-        self.load_map()
-        
-    def load_map(self):
         # Adds the enemies and obstacles into their group
         # y position = the y offset
         y_pos = 0
@@ -35,6 +48,7 @@ class Level(pygame.sprite.Sprite):
                 self.map_key(x, (x_pos, y_pos))
                 x_pos += TILESIZE
             y_pos += TILESIZE
+            
                 
     def map_key(self, letter, pos):
         # Creates wall obstacle
@@ -44,5 +58,14 @@ class Level(pygame.sprite.Sprite):
         # Creates default enemy (will probably change when we add subclasses)
         if letter == "!":
             enemy.Enemy(self, img.enemy_img_1, pos)
+    
+    # Set a single adjacent room
+    def set_adjacent(self, adjacent, value):
+        self.adjacents[adjacent] = value
             
-        
+    # Set every adjacent room
+    def set_adjacents(self, up, down, left, right):
+        self.adjacents["up"] = up
+        self.adjacents["down"] = down
+        self.adjacents["left"] = left
+        self.adjacents["right"] = right

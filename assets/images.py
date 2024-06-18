@@ -8,7 +8,11 @@ player_img.fill('blue')
 level_1_img = pygame.Surface((50,50))
 level_1_img.fill("navajowhite2")
 
-# tree image (temporarily a green square)
+# Level 2 background (temporarily a gray square)
+level_2_img = pygame.Surface((50,50))
+level_2_img.fill("gray20")
+
+# wall image (temporarily a green square)
 wall_img_1 = pygame.Surface((50,50))
 wall_img_1.fill("forestgreen")
 
