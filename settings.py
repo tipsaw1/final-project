@@ -8,6 +8,8 @@ pygame.init()
 # Constants
 SCREEN_H = 720 
 SCREEN_W = 1280
+white = ('white')
+black = ('black')
 clock = pygame.time.Clock()
 FPS = 60
 TILESIZE = 64
