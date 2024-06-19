@@ -8,20 +8,25 @@ class Melee_weapon:
         self.range = range
         self.attack_cooldown = cooldown
         self.last_attacked = -cooldown
+        self.pos = player_sprite.sprite.rect.center
+        
         
     def attack(self, pos):
         if pygame.time.get_ticks() - self.last_attacked >= self.attack_cooldown:
-    
-            for enemy in level_sprite.sprite.enemy_sprites:
-                x_d = enemy.rect.x - player_sprite.sprite.rect.x
-                y_d = enemy.rect.y - player_sprite.sprite.rect.y
+            for sprite in level_sprite.sprite.all_sprites:
+                x_d = sprite.rect.x - player_sprite.sprite.rect.x
+                y_d = sprite.rect.y - player_sprite.sprite.rect.y
                 t_d = (x_d**2 + y_d**2)**0.5
-                if t_d <= self.range:
-                    #print('hit?')
-                    if enemy.rect.clipline(player_sprite.sprite.rect.center, pos):
-                        enemy.take_damage(self.damage)
+                if t_d <= self.range and sprite.rect.clipline(player_sprite.sprite.rect.center, pos):
+                    if sprite in level_sprite.sprite.enemy_sprites:
+                        player_sprite.sprite.slashing = True
+                        sprite.take_damage(self.damage)
                         self.last_attacked = pygame.time.get_ticks()
+                        self.pos = pos
                     
+                    
+    
+                
 
 class Ranged_weapon:
     # constructor

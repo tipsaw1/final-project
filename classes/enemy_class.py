@@ -1,6 +1,5 @@
 from settings import *
 import classes.bullet_class as bullet
-print('imported enemy class')
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, level, image, pos, damage, hp, speed):

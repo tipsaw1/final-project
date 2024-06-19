@@ -15,17 +15,15 @@ level_1.set_adjacents(down = level_2)
 level_2.set_adjacents(up = level_1, down = level_3)
 level_3.set_adjacents(up = level_2) #can add down after other levels
 # initialize player
-test_weapon = weapon.Ranged_weapon(10, 500)
 p1 = player.Player(level_3)
+test_weapon = weapon.Melee_weapon(10, 150, 500)
 p1.equipped_weapon = test_weapon
 
-print(level_sprite)
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-    screen.fill("green")
     level_sprite.update()
     level_sprite.draw(screen)
     level_sprite.sprite.all_sprites.update()

@@ -29,6 +29,8 @@ class Player(pygame.sprite.Sprite):
         self.level.all_sprites.add(self)
         # dx and dy are 0
         self.dx, self.dy = 0, 0
+        self.slashing = False
+        
         
         
     def update(self):
@@ -37,7 +39,27 @@ class Player(pygame.sprite.Sprite):
         self.check_keys()
         self.move()
         self.check_borders()
+        self.draw_slash(self.equipped_weapon.pos)
         
+    def draw_slash(self, mousePos):
+        surface = pygame.display.get_surface()
+        if self.slashing:
+            if pygame.time.get_ticks() - self.equipped_weapon.last_attacked <= 200:
+                distance = pygame.math.Vector2(self.rect.center)
+                distance = mousePos - distance
+                
+                angle = math.atan2(distance.y, distance.x)*-180/math.pi
+                image = pygame.transform.rotate(img.slash_img, angle)
+                dx, dy = calculate_movement(distance.x, distance.y, self.rect.width/2)
+                image_rect = image.get_rect(center = (self.rect.centerx + dx, self.rect.centery + dy))
+                
+                pos = pygame.math.Vector2(image_rect.x, image_rect.y)
+                pos -= level_sprite.sprite.all_sprites.offset
+                image_rect.topleft = pos
+                surface.blit(image, image_rect)
+            else:
+                self.slashing = False
+
     def check_keys(self):
         # Store keys and change dx/dy
         keys = pygame.key.get_pressed()
@@ -55,7 +77,6 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_SPACE]:
             if self.equipped_weapon:
                 self.equipped_weapon.attack((offset_mouseX, offset_mouseY))
-        
     def move(self):
         # Moves the player
         if self.dx != 0 or self.dy != 0:

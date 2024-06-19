@@ -2,7 +2,7 @@ from settings import *
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, target_group, start_pos, target_pos, damage, speed, image):
-        super().__init__(level_sprite.sprite.all_sprites)
+        super().__init__(level_sprite.sprite.all_sprites, level_sprite.sprite.bullet_sprites)
         self.image = image
         self.rect = image.get_rect(center = start_pos)
         self.target_group = target_group
