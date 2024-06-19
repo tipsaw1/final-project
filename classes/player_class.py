@@ -26,9 +26,10 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center = (SCREEN_W//2, SCREEN_H//2))
         # screen is stored
         self.level = level
+        self.level.all_sprites.add(self)
         # dx and dy are 0
         self.dx, self.dy = 0, 0
-        self.level.load_map()
+        
         
     def update(self):
         if pygame.time.get_ticks() - self.last_hurt >= 150:
@@ -96,30 +97,34 @@ class Player(pygame.sprite.Sprite):
     def check_borders(self):
         # If you go past the left side of the screen and there is
         # another screen to the left, you go to the screen to the left
-        if self.rect.centerx < 0 and self.level.adjacents["left"]:
+        if self.rect.centerx < self.level.rect.left and self.level.adjacents["left"]:
             self.level = self.level.adjacents["left"]
-            self.level.load_map()
+            level_sprite.add(self.level)
+            self.level.reset_map()
             self.rect.right = self.level.rect.right
             
         # If you go past the right side of the screen and there is
         # another screen to the right, you go to the screen to the right
         if self.rect.centerx > self.level.rect.right and self.level.adjacents["right"]:
             self.level = self.level.adjacents["right"]
-            self.level.load_map()
+            level_sprite.add(self.level)
+            self.level.reset_map()
             self.rect.left = self.level.rect.left
         
         # If you go past the top side of the screen and there is
         # another screen above, you go to the screen above
-        if self.rect.centery < 0 and self.level.adjacents["up"]:
+        if self.rect.centery < self.level.rect.top and self.level.adjacents["up"]:
             self.level = self.level.adjacents["up"]
-            self.level.load_map()
+            level_sprite.add(self.level)
+            self.level.reset_map()
             self.rect.bottom = self.level.rect.bottom
             
         # If you go past the bottom side of the screen and there is
         # another screen below, you go to the screen below
         if self.rect.centery > self.level.rect.bottom and self.level.adjacents["down"]:
             self.level = self.level.adjacents["down"]
-            self.level.load_map()
+            level_sprite.add(self.level)
+            self.level.reset_map()
             self.rect.top = self.level.rect.top
             
     

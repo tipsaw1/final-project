@@ -12,17 +12,6 @@ class Level(pygame.sprite.Sprite):
         self.image = image
         # Stores the map grid that will be used to draw the screen
         self.map = map_grid
-        # Stores the adjacent levels
-        self.adjacents = {
-            "up": None,
-            "down": None,
-            "left": None,
-            "right": None
-        }
-    
-        
-    #Loads the map
-    def load_map(self):
         # Sets up rect and image and etc
         height = len(self.map)*TILESIZE
         width = len(self.map[0])*TILESIZE
@@ -34,13 +23,25 @@ class Level(pygame.sprite.Sprite):
         level_sprite.add(self)
         
         # Stores all sprites in this room (including the player)
-        self.all_sprites = OffsetGroup(player_sprite.sprite)
+        self.all_sprites = OffsetGroup()
         # Stores all the enemies in this room
         self.enemy_sprites = OffsetGroup()
         # Stores all the walls/items with collisions
         self.obstacle_sprites = OffsetGroup()
         
         self.bullet_sprites = OffsetGroup()
+        # Stores the adjacent levels
+        self.adjacents = {
+            "up": None,
+            "down": None,
+            "left": None,
+            "right": None
+        }
+        self.load_map()
+    
+        
+    #Loads the map
+    def load_map(self):
         
         # Adds the enemies and obstacles into their group
         # y position = the y offset
@@ -53,6 +54,13 @@ class Level(pygame.sprite.Sprite):
                 x_pos += TILESIZE
             y_pos += TILESIZE
             
+    def reset_map(self):
+        for enemy in self.enemy_sprites:
+            enemy.rect.topleft = enemy.start_pos
+        if player_sprite.sprite not in self.all_sprites:
+            self.all_sprites.add(player_sprite.sprite)
+            
+            
                 
     def map_key(self, letter, pos):
         # Creates wall obstacle
@@ -61,10 +69,10 @@ class Level(pygame.sprite.Sprite):
         
         # Creates default enemy (will probably change when we add subclasses)
         if letter == "!":
-            enemy.Melee_enemy("test melee", self, img.enemy_img_1, pos, 10, 50, 7)
+            enemy.Melee_enemy(self, img.enemy_img_1, pos, 10, 50, 7)
         
         if letter == ">":
-            enemy.Ranged_enemy("test ranged", self, img.enemy_img_2, pos, 15, 30, 7)
+            enemy.Ranged_enemy(self, img.enemy_img_2, pos, 15, 30, 7)
             
     # Set adjacent rooms
     def set_adjacents(self, up = None, down = None, left = None, right = None):

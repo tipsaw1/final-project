@@ -19,7 +19,7 @@ test_weapon = weapon.Ranged_weapon(10, 500)
 p1 = player.Player(level_3)
 p1.equipped_weapon = test_weapon
 
-
+print(level_sprite)
 running = True
 while running:
     for event in pygame.event.get():

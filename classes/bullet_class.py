@@ -19,8 +19,12 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.move_ip(self.dx, self.dy)
         
     def check_collisions(self):
-        collision = pygame.sprite.spritecollideany(self, self.target_group)
-        if collision:
-            collision.take_damage(self.damage)
-            self.kill()
+        collisions = pygame.sprite.spritecollide(self, level_sprite.sprite.all_sprites, False)
         
+        for collision in collisions:
+            if collision != self:
+                if collision in level_sprite.sprite.obstacle_sprites:
+                    self.kill()
+                elif collision in self.target_group:
+                    collision.take_damage(self.damage)
+                    self.kill()

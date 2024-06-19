@@ -93,4 +93,3 @@ class OffsetGroup(pygame.sprite.Group):
              allowing you to use collisions and other pygame Rect features
             '''
             surface.blit(sprite.image, sprite.rect.topleft-self.offset)
-            
