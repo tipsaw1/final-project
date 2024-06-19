@@ -21,12 +21,12 @@ class Player(pygame.sprite.Sprite):
     
     def __init__(self, level):
         super().__init__(player_sprite)
-        self.image = self.default_image
-        # Rect is positioned in the center of the screen
-        self.rect = self.image.get_rect(center = (SCREEN_W//2, SCREEN_H//2))
         # screen is stored
         self.level = level
         self.level.all_sprites.add(self)
+        self.image = self.default_image
+        # Rect is positioned in the center of the screen
+        self.rect = self.image.get_rect(center = self.level.rect.center)
         # dx and dy are 0
         self.dx, self.dy = 0, 0
         self.slashing = False
