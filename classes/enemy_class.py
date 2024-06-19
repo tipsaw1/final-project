@@ -17,3 +17,6 @@ class Enemy(pygame.sprite.Sprite):
         player_sprite.sprite.take_damage(self.damage)
         
     # Movement pattern will be based on subclasses
+    
+    
+    
