@@ -39,7 +39,8 @@ class Player(pygame.sprite.Sprite):
         self.check_keys()
         self.move()
         self.check_borders()
-        self.draw_slash(self.equipped_weapon.pos)
+        if self.equipped_weapon.type == "Melee":
+            self.draw_slash(self.equipped_weapon.pos)
         
     def draw_slash(self, mousePos):
         surface = pygame.display.get_surface()

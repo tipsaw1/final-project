@@ -16,7 +16,7 @@ level_2.set_adjacents(up = level_1, down = level_3)
 level_3.set_adjacents(up = level_2) #can add down after other levels
 # initialize player
 p1 = player.Player(level_3)
-test_weapon = weapon.Melee_weapon(10, 150, 500)
+test_weapon = weapon.Ranged_weapon(10, 500)
 p1.equipped_weapon = test_weapon
 
 running = True
@@ -28,6 +28,8 @@ while running:
     level_sprite.draw(screen)
     level_sprite.sprite.all_sprites.update()
     level_sprite.sprite.all_sprites.draw(screen)
+    if player_sprite.sprite.hp <= 0:
+        running = False
     pygame.display.flip()
     clock.tick(FPS)
     

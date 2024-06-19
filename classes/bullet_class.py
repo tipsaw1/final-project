@@ -25,6 +25,8 @@ class Bullet(pygame.sprite.Sprite):
             if collision != self:
                 if collision in level_sprite.sprite.obstacle_sprites:
                     self.kill()
+                    break
                 elif collision in self.target_group:
                     collision.take_damage(self.damage)
                     self.kill()
+                    break

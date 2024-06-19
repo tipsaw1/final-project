@@ -9,6 +9,7 @@ class Melee_weapon:
         self.attack_cooldown = cooldown
         self.last_attacked = -cooldown
         self.pos = player_sprite.sprite.rect.center
+        self.type = "Melee"
         
         
     def attack(self, pos):
@@ -34,6 +35,7 @@ class Ranged_weapon:
         self.damage = damage
         self.attack_cooldown = cooldown
         self.last_attacked = -cooldown
+        self.type = "Ranged"
         
     def attack(self, pos):
         if pygame.time.get_ticks() - self.last_attacked >= self.attack_cooldown:
