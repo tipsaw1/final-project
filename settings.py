@@ -12,7 +12,7 @@ white = ('white')
 black = ('black')
 clock = pygame.time.Clock()
 FPS = 60
-TILESIZE = 64
+TILESIZE = 50
 HP = 10
 
 # Player sprite accesible from any file

@@ -2,12 +2,12 @@ from settings import *
 import classes.bullet_class as bullet
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, level, image, pos, damage, hp, speed):
+    def __init__(self, level, image, pos, damage, hp, speed, size):
         super().__init__(level.enemy_sprites, level.all_sprites)
         self.level = level
-        self.default_image = pygame.transform.scale(image, (TILESIZE//2, TILESIZE//2))
-        self.hurt_img = pygame.transform.scale(img.player_hurt_img,(TILESIZE//2, TILESIZE//2))
-        self.image = pygame.transform.scale(image, (TILESIZE//2, TILESIZE//2))
+        self.default_image = pygame.transform.scale(image, (size, size))
+        self.hurt_img = pygame.transform.scale(img.player_hurt_img,(size, size))
+        self.image = pygame.transform.scale(image, (size, size))
         self.rect = self.image.get_rect(topleft = pos)
         self.can_see_player = False
         self.attack_cooldown = 500
@@ -38,14 +38,15 @@ class Enemy(pygame.sprite.Sprite):
     def idle_movement(self):
         if self.idle == False:
             # Either move left right up or down
-            self.dx, self.dy = random.choice(((0, self.direction_modifier*self.speed), (self.direction_modifier*self.speed, 0)))
+            #self.dx, self.dy = random.choice(((0, self.direction_modifier*self.speed), (self.direction_modifier*self.speed, 0)))
+            self.dx, self.dy = self.direction_modifier*self.speed, 0
             self.idle = True
             print('test')
         if pygame.time.get_ticks() - self.last_turned >= 2000:
             self.dx *= -1
             self.dy *= -1
             self.last_turned = pygame.time.get_ticks()
-            
+            print("test")
         
     def check_line_of_sight(self):
         self.can_see_player = True
@@ -145,8 +146,8 @@ class Enemy(pygame.sprite.Sprite):
     
     
 class Melee_enemy(Enemy):
-    def __init__(self, level, image, pos, damage, hp, speed):
-        super().__init__(level, image, pos, damage, hp, speed)
+    def __init__(self, level, image, pos, damage, hp, speed, size):
+        super().__init__(level, image, pos, damage, hp, speed, size)
         self.range = 100
         
     def draw_slash(self, surface):
@@ -188,8 +189,8 @@ class Melee_enemy(Enemy):
         self.draw_slash(pygame.display.get_surface())
 
 class Ranged_enemy(Enemy):
-    def __init__(self, level, image, pos, damage, hp, speed):
-        super().__init__(level, image, pos, damage, hp, speed)
+    def __init__(self, level, image, pos, damage, hp, speed,size):
+        super().__init__(level, image, pos, damage, hp, speed,size)
         self.evade_distance = SCREEN_H//2
         
     def shoot(self):
@@ -207,7 +208,6 @@ class Ranged_enemy(Enemy):
         distance = player_sprite.sprite.rect.center - distance
         total_distance_sq = distance.x**2 + distance.y**2
         angle = math.atan2(distance.y, distance.x)
-        self.dx, self.dy = 0,0
         if self.can_see_player:
             self.idle = False
             if total_distance_sq < self.evade_distance**2:
@@ -220,6 +220,86 @@ class Ranged_enemy(Enemy):
         
         else:
             self.idle_movement()
+        
+class Boss_enemy(Enemy):
+    def __init__(self, level, image, pos, damage, hp, speed,size):
+        super().__init__(level, image, pos, damage, hp, speed,size)
+        self.default_attack_cooldown = self.attack_cooldown
+        self.range = 300
+        self.close_attack_range = self.range
+        self.far_attack_range = 500
+        self.wave_attacking = False
+        self.wave_img = pygame.transform.scale(img.wave_attack_img, (self.rect.width, self.rect.width))
+        self.wave_rect = self.wave_img.get_rect()
+        
+        
+    def update(self):
+        super().update()
+        self.rect.center = SCREEN_W//2, SCREEN_H//2
+        self.attack_cycle()
+        
+        
+    def idle_movement(self):
+        self.dx = 0
+        self.dy = 0
+        
+    def attack_cycle(self):
+        if pygame.time.get_ticks() - self.last_attack >= self.attack_cooldown:
+            distance = pygame.math.Vector2(player_sprite.sprite.rect.center)
+            distance -= self.rect.center
+            total_distance_sq = distance.x**2 + distance.y**2
+            self.wave_attacking = False
+            if total_distance_sq > self.far_attack_range**2:
+                self.far_attack()
+                #print("far attack!")
+            elif total_distance_sq < self.close_attack_range**2:
+                self.close_attack()
+                #print("close attack!")
+            else:
+                self.mid_attack()
+                #print("mid attack!")
+            print(self.attack_cooldown)
+            self.last_attack = pygame.time.get_ticks()
+                
+        if self.wave_attacking:
+            self.wave_attack()
+            surface = pygame.display.get_surface()
+            surface.blit(self.wave_img, self.wave_rect.topleft-level_sprite.sprite.all_sprites.offset)
+            
+                
+    def far_attack(self):
+        self.attack_cooldown = 100
+        bullet.Bullet(player_sprite, self.rect.center, player_sprite.sprite.rect.center, self.damage, 20, img.arrow_img)
+        
+    def close_attack(self):
+        self.attack_cooldown = self.default_attack_cooldown
+        if self.in_attack_range():
+            self.damage_player()
+            
+    def mid_attack(self):
+        self.attack_cooldown = 100
+        self.wave_attack()
+        self.wave_attacking = True
+        
+    def wave_attack(self):
+        self.wave_rect.center = self.rect.center
+        self.wave_img = pygame.transform.scale_by(self.wave_img, 1.1)
+        self.wave_rect = self.wave_img.get_rect()
+        radius = self.wave_rect.width//2
+        distance = pygame.math.Vector2(player_sprite.sprite.rect.center)
+        distance -= self.rect.center
+        total_distance_sq = distance.x**2 + distance.y**2
+        if total_distance_sq < radius**2:
+            self.damage_player()
+        if self.wave_rect.width >= SCREEN_H:
+            self.wave_attacking = False
+            self.wave_img = pygame.transform.scale(img.wave_attack_img, (self.rect.width, self.rect.width))
+            self.wave_rect = self.wave_img.get_rect()
+            print('wave big')
+        
+            
+    
+        
         
 # Dungeon Enemies
 class Goblin(Melee_enemy):

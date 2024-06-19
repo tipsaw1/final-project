@@ -8,8 +8,7 @@ class Player(pygame.sprite.Sprite):
     # Size is half a tile
     size = 3*TILESIZE//4
     # Image is scaled to size
-    default_image = pygame.transform.scale(img.player_img, (size, size))
-    hurt_image = pygame.transform.scale(img.player_hurt_img, (size,size))
+    animation_frame = 0
     # Speed is 10
     speed = 10
     # Hp and max hp start at 50
@@ -21,10 +20,15 @@ class Player(pygame.sprite.Sprite):
     
     def __init__(self, level):
         super().__init__(player_sprite)
+        self.idle_animation = img.player_idle_animation
+        self.walk_animation = img.player_walk_animation
+        self.hurt_animation = img.player_hurt_animation
+        self.current_animation = self.idle_animation
         # screen is stored
         self.level = level
         self.level.all_sprites.add(self)
-        self.image = self.default_image
+        level_sprite.add(self.level)
+        self.image = self.current_animation[0]
         # Rect is positioned in the center of the screen
         self.rect = self.image.get_rect(center = self.level.rect.center)
         # dx and dy are 0
@@ -33,14 +37,15 @@ class Player(pygame.sprite.Sprite):
         
         
         
+        
     def update(self):
-        if pygame.time.get_ticks() - self.last_hurt >= 150:
-            self.image = self.default_image
+        self.update_animation_frame(0.1)
         self.check_keys()
         self.move()
         self.check_borders()
         if self.equipped_weapon.type == "Melee":
             self.draw_slash(self.equipped_weapon.pos)
+        
         
     def draw_slash(self, mousePos):
         surface = pygame.display.get_surface()
@@ -82,6 +87,11 @@ class Player(pygame.sprite.Sprite):
         # Moves the player
         if self.dx != 0 or self.dy != 0:
             self.dx, self.dy = calculate_movement(self.dx, self.dy, self.speed)
+            if self.current_animation != self.hurt_animation:
+                self.change_animation(self.walk_animation)
+        else:
+            if self.current_animation != self.hurt_animation:
+                self.change_animation(self.idle_animation)
             
         self.rect.x += self.dx
         self.check_collisions("x")
@@ -154,7 +164,21 @@ class Player(pygame.sprite.Sprite):
         # Will probably change to reflect armor/defense
         if pygame.time.get_ticks() - self.last_hurt >= self.hurt_cooldown:
             self.hp -= damage
-            self.image = self.hurt_image
+            self.change_animation(self.hurt_animation, True)
             self.last_hurt = pygame.time.get_ticks()
             
-    
+    def change_animation(self, animation, reset_frames = False):
+        self.current_animation = animation
+        self.rect = self.image.get_rect(topleft = self.rect.topleft)
+        if reset_frames:
+            self.animation_frame = 0
+            
+    def update_animation_frame(self, amount):
+        self.image = self.current_animation[int(self.animation_frame)]
+        self.image = pygame.transform.scale(self.image, (self.size, self.size))
+        
+        self.animation_frame += amount
+        if self.animation_frame >= len(self.current_animation):
+            if self.current_animation == self.hurt_animation:
+                    self.change_animation(self.idle_animation)
+            self.animation_frame = 0
