@@ -144,7 +144,7 @@ class Enemy(pygame.sprite.Sprite):
 class Melee_enemy(Enemy):
     def __init__(self, level, image, pos, damage, hp, speed, size):
         super().__init__(level, image, pos, damage, hp, speed, size)
-        self.range = 100
+        self.range = 75
         
     def draw_slash(self, surface):
         if pygame.time.get_ticks() - self.last_attack >= 200:
@@ -222,7 +222,7 @@ class Boss_enemy(Enemy):
         super().__init__(level, image, pos, damage, hp, speed,size)
         # Attacks
         self.default_attack_cooldown = self.attack_cooldown
-        self.far_attack_range = 300
+        self.far_attack_range = 250
         
         # Wave attacks
         self.wave_attacking = False

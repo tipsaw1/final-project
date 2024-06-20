@@ -6,14 +6,14 @@ class Player(pygame.sprite.Sprite):
     equipped_weapon = None
     equipped_armor = None
     # Size is half a tile
-    size = 3*TILESIZE//4
+    size = 3.2*TILESIZE//4
     # Image is scaled to size
     animation_frame = 0
     # Speed is 10
-    speed = 10
+    speed = 11
     # Hp and max hp start at 50
-    hp = 25
-    max_hp = 50
+    hp = 150
+    max_hp = 150
     
     hurt_cooldown = 300
     last_hurt = -hurt_cooldown

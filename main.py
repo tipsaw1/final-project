@@ -12,9 +12,15 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if start_screen.start_button.collide(event.pos):
+                start_screen.menu = False    
+
+    if start_screen.menu:
+        start_screen.start()
+    else:
+        game_play.play_game(screen)
     
-    game_play.play_game(screen)
-    #start_screen.start()
     #if player_sprite.sprite.hp <= 0:
         #running = False
     pygame.display.flip()
