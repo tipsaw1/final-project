@@ -7,4 +7,5 @@ def draw_ui(surface):
 def draw_health(surface, pos):
     surface.blit(img.health_bar_back, pos)
     surface.blit(img.health_bar_front, pos)
-    img.health_bar_front = pygame.transform.scale(img.health_bar_front, (player_sprite.sprite.health_percent*50,10))
+    if player_sprite.sprite.hp > 0:
+        img.health_bar_front = pygame.transform.scale(img.health_bar_front, (player_sprite.sprite.health_percent*50,10))

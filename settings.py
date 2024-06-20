@@ -12,7 +12,7 @@ white = ('white')
 black = ('black')
 clock = pygame.time.Clock()
 FPS = 60
-TILESIZE = 50
+TILESIZE = 64
 button_font = pygame.font.SysFont("impact", 100)
 
 
