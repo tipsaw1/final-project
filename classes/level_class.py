@@ -29,6 +29,7 @@ class Level(pygame.sprite.Sprite):
         # Stores the floor tiles in the room
         self.tile_sprites = OffsetGroup()
         
+        self.item_sprites = OffsetGroup()
         # Stores the bullets in the room        
         self.bullet_sprites = OffsetGroup()
         # Stores the adjacent levels
@@ -40,7 +41,12 @@ class Level(pygame.sprite.Sprite):
         }
         self.load_map()
     
-        
+    def update(self):
+        surface = pygame.display.get_surface()
+        self.tile_sprites.draw(surface)
+        self.item_sprites.update()
+        self.item_sprites.draw(surface)
+    
     #Loads the map
     def load_map(self):
         

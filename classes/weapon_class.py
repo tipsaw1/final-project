@@ -43,5 +43,20 @@ class Ranged_weapon:
             self.last_attacked = pygame.time.get_ticks()
         
         
+class Magic_weapon:
+    def __init__(self, damage, range, cooldown):
+        self.range = range
+        self.damage = damage
+        self.attack_cooldown = cooldown
+        self.last_attacked = -cooldown
+        self.type = "Magic"
+        self.accuracy_modifier = 100
+        
+    def attack(self, pos):
+        if pygame.time.get_ticks() - self.last_attacked >= self.attack_cooldown:
+            bullet.Flame(level_sprite.sprite.enemy_sprites, player_sprite.sprite.rect.center, pos, self.damage, 25, img.arrow_img, TILESIZE//4, self.range)
+            self.last_attacked = pygame.time.get_ticks()
+    
+        
 
         

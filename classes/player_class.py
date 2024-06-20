@@ -96,9 +96,9 @@ class Player(pygame.sprite.Sprite):
             self.dx -= 1
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             self.dx += 1
-        if keys[pygame.K_SPACE]:
+        if keys[pygame.K_SPACE] or pygame.mouse.get_pressed()[0]:
             if self.equipped_weapon:
-                self.equipped_weapon.attack((offset_mouseX, offset_mouseY))
+                self.equipped_weapon.attack([offset_mouseX, offset_mouseY])
     def move(self):
         # Moves the player
         if self.dx != 0 or self.dy != 0:

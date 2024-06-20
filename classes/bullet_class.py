@@ -30,3 +30,37 @@ class Bullet(pygame.sprite.Sprite):
                     collision.take_damage(self.damage)
                     self.kill()
                     break
+                
+class Flame(Bullet):
+    def __init__(self, target_group, start_pos, target_pos, damage, speed, image, size, range):
+        super().__init__(target_group, start_pos, target_pos, damage, speed, image, size)
+        self.range = range
+        distance = pygame.math.Vector2(target_pos)
+        distance -= self.rect.center
+        angle = math.atan2(distance.y, distance.x)
+        angle *= 180/math.pi
+        angle = random.randrange(int(angle-50), int(angle+50))
+        angle *= math.pi/180
+        self.dx = speed*math.cos(angle)
+        self.dy = speed*math.sin(angle)
+        
+    def update(self):
+        super().update()
+        distance = pygame.math.Vector2(self.rect.center)
+        distance -= player_sprite.sprite.rect.center
+        total_distance_sq = distance.x**2 + distance.y**2
+        if abs(total_distance_sq) >= self.range**2:
+            self.kill()
+            
+    def check_collisions(self):
+        
+        collisions = pygame.sprite.spritecollide(self, level_sprite.sprite.all_sprites, False)
+        
+        for collision in collisions:
+            if collision != self:
+                if collision in level_sprite.sprite.obstacle_sprites:
+                    self.kill()
+                    break
+                elif collision in self.target_group:
+                    collision.take_damage(self.damage)
+                    break

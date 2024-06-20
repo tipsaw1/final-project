@@ -19,5 +19,9 @@ level_5.set_adjacents(up = level_4, down = level_6)
 # initialize player
 p1 = player.Player(level_1)
 
-test_weapon = weapon.Ranged_weapon(10, 500)
-p1.equipped_weapon = test_weapon
+def mage_select():
+    p1.equipped_weapon = weapon.Magic_weapon(1, 250, 2)
+def ranger_select():
+    p1.equipped_weapon = weapon.Ranged_weapon(10, 300)
+def melee_select():
+    p1.equipped_weapon = weapon.Melee_weapon(10, 100, 300)

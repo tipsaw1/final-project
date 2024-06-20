@@ -58,7 +58,14 @@ wave_attack_img = pygame.image.load("assets/images/fire_ring.png")
 arrow_img = pygame.Surface((20,20))
 arrow_img.fill('yellow')
 
+# Items
+health_item = pygame.Surface((50,50))
+health_item.fill("green")
 
+#Hp
+health_bar_back = pygame.Surface((50,10))
+health_bar_back.fill("red4")
 
-        
+health_bar_front = pygame.Surface((50,10))
+health_bar_front.fill("green")
         

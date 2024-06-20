@@ -92,7 +92,12 @@ class OffsetGroup(pygame.sprite.Group):
              The Rects remain in the same position relative to each other,
              allowing you to use collisions and other pygame Rect features
             '''
-            surface.blit(sprite.image, sprite.rect.topleft-self.offset)
+            if sprite != player_sprite.sprite:
+                surface.blit(sprite.image, sprite.rect.topleft-self.offset)
+        
+        # Ensures player sprite is always on top
+        if player_sprite.sprite in self.sprites():
+            surface.blit(player_sprite.sprite.image, player_sprite.sprite.rect.topleft - self.offset)
 
 # Button group class
 class ButtonGroup():
@@ -103,7 +108,12 @@ class ButtonGroup():
         for button in self.buttons:
             button.draw(surface)
             
+    def update(self):
+        for button in self.buttons:
+            button.update()
+            
     def add(self, button):
         self.buttons.append(button)
         
-button_group = ButtonGroup()
+start_button_group = ButtonGroup()
+class_button_group = ButtonGroup()

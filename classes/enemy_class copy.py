@@ -215,8 +215,8 @@ class Ranged_enemy(Enemy):
             elif total_distance_sq > (self.evade_distance+50)**2:
                 self.dx, self.dy = calculate_movement(distance.x, distance.y, self.speed)
             else:
-                self.dx = self.direction_modifier*(total_distance_sq**0.5)*(math.cos(angle+math.pi/180)-math.cos(angle))
-                self.dy = self.direction_modifier*(total_distance_sq**0.5)*(math.sin(angle+math.pi/180)-math.sin(angle))
+                self.dx = self.direction_modifier*(total_distance_sq**0.5)*(math.cos(angle+math.pi/360)-math.cos(angle))
+                self.dy = self.direction_modifier*(total_distance_sq**0.5)*(math.sin(angle+math.pi/360)-math.sin(angle))
         
         else:
             self.idle_movement()
