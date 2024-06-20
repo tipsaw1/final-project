@@ -12,14 +12,14 @@ class Collectable(pygame.sprite.Sprite):
             self.collect()
     
     def collect(self):
-        pass
+        self.kill()
     
 class Health_item(Collectable):
     def __init__(self, pos, size, image):
         super().__init__(pos, size, image)
     
     def collect(self):
-        player_sprite.sprite.hp += 5
+        player_sprite.sprite.hp += 10
         player_sprite.sprite.hp = min(player_sprite.sprite.max_hp, player_sprite.sprite.hp)
         print(player_sprite.sprite.hp)
         self.kill()
