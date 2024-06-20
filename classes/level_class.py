@@ -1,22 +1,20 @@
 from settings import *
 import classes.enemy_class as enemy
 import classes.obstacle_class as obstacle
+import classes.tile_class as tile
 
 # Different rooms/screens
-class Level(pygame.sprite.Sprite):
-    
-    
-    def __init__(self, map_grid, image):
+class Level(pygame.sprite.Sprite):    
+    def __init__(self, map_grid,):
         super().__init__()
         # Background image
-        self.image = image
+        self.tile_images = (img.tile_1, img.tile_2, img.tile_3)
         # Stores the map grid that will be used to draw the screen
         self.map = map_grid
         # Sets up rect and image and etc
         height = len(self.map)*TILESIZE
         width = len(self.map[0])*TILESIZE
-        self.image = pygame.transform.scale(self.image, (width,height))
-        self.rect = self.image.get_rect(topleft = (0,0))
+        self.rect = pygame.Rect(0,0, width, height)
         
         # Puts current level into the level sprite group
         # Level sprite is a GroupSingle()
@@ -28,7 +26,10 @@ class Level(pygame.sprite.Sprite):
         self.enemy_sprites = OffsetGroup()
         # Stores all the walls/items with collisions
         self.obstacle_sprites = OffsetGroup()
+        # Stores the floor tiles in the room
+        self.tile_sprites = OffsetGroup()
         
+        # Stores the bullets in the room        
         self.bullet_sprites = OffsetGroup()
         # Stores the adjacent levels
         self.adjacents = {
@@ -50,6 +51,7 @@ class Level(pygame.sprite.Sprite):
             # x position = the level's x offset
             x_pos = 0
             for x in y:
+                tile.Tile(self, random.choice(self.tile_images), (x_pos, y_pos))
                 self.map_key(x, (x_pos, y_pos))
                 x_pos += TILESIZE
             y_pos += TILESIZE

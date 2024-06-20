@@ -13,13 +13,13 @@ black = ('black')
 clock = pygame.time.Clock()
 FPS = 60
 TILESIZE = 50
-HP = 10
+button_font = pygame.font.SysFont("impact", 100)
+
 
 # Player sprite accesible from any file
 player_sprite = pygame.sprite.GroupSingle()
 # Level sprite
 level_sprite = pygame.sprite.GroupSingle()
-
 
 # This function calculates the x and y values needed to move a specific distance at an angle
 # This prevents you from moving faster when moving diagonally (1 up and 1 to the right = √2 diagonally)
@@ -93,3 +93,17 @@ class OffsetGroup(pygame.sprite.Group):
              allowing you to use collisions and other pygame Rect features
             '''
             surface.blit(sprite.image, sprite.rect.topleft-self.offset)
+
+# Button group class
+class ButtonGroup():
+    def __init__(self, *buttons):
+        self.buttons = list(buttons)
+        
+    def draw(self, surface):
+        for button in self.buttons:
+            button.draw(surface)
+            
+    def add(self, button):
+        self.buttons.append(button)
+        
+button_group = ButtonGroup()

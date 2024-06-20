@@ -206,6 +206,6 @@ level_6_map = [
 
 
 ]
-print("X:",len(level_4_map[0]), "Y:",len(level_4_map),)
+#print("X:",len(level_4_map[0]), "Y:",len(level_4_map),)
 
 

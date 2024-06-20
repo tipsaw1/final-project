@@ -1,9 +1,9 @@
 from settings import *
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, target_group, start_pos, target_pos, damage, speed, image):
+    def __init__(self, target_group, start_pos, target_pos, damage, speed, image, size):
         super().__init__(level_sprite.sprite.all_sprites, level_sprite.sprite.bullet_sprites)
-        self.image = image
+        self.image = pygame.transform.scale(image, (size, size))
         self.rect = image.get_rect(center = start_pos)
         self.target_group = target_group
         self.damage = damage

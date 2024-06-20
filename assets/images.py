@@ -29,24 +29,13 @@ while running:
     
 pygame.quit()
 '''
-# Level 1 background (temporarily a tan square)
-level_1_img = pygame.Surface((50,50))
-level_1_img.fill("navajowhite2")
 
-
-player_hurt_img = pygame.Surface((50,50))
-player_hurt_img.fill("white")
-# Level 2 background (temporarily a gray square)
-#level_2_img = pygame.image.load("assets/images/dungeonBG.png")
-
-
-# Level 3 backround :] made by yesung yay
-#level_3_img = pygame.image.load("assets/images/dungeonBG.png")
-
+tile_1 = pygame.image.load("assets/images/tile_1.jpg")
+tile_2 = pygame.image.load("assets/images/tile_2.jpg")
+tile_3 = pygame.image.load("assets/images/tile_3.jpg")
 
 # wall image (temporarily a green square)
-wall_img_1 = pygame.Surface((50,50))
-wall_img_1.fill("forestgreen")
+wall_img_1 = pygame.image.load("assets/images/wall_tile.png")
 
 # Enemy image (temporarily a red square)
 enemy_img_1 = pygame.Surface((50, 50))
@@ -57,6 +46,10 @@ enemy_img_2.fill('orange')
 
 boss_enemy_img = pygame.Surface((120, 120))
 boss_enemy_img.fill("green")
+
+enemy_hurt_img = pygame.Surface((50,50))
+enemy_hurt_img.fill("white")
+
 # Slash
 slash_img = pygame.image.load("assets/images/slash.png")
 wave_attack_img = pygame.image.load("assets/images/fire_ring.png")

@@ -12,7 +12,7 @@ class Player(pygame.sprite.Sprite):
     # Speed is 10
     speed = 10
     # Hp and max hp start at 50
-    hp = 50
+    hp = 25
     max_hp = 50
     
     hurt_cooldown = 300
@@ -34,6 +34,13 @@ class Player(pygame.sprite.Sprite):
         # dx and dy are 0
         self.dx, self.dy = 0, 0
         self.slashing = False
+        '''
+        self.health_back = pygame.Surface((100, 20))
+        self.health_back.fill("red")
+        self.health_front = pygame.Surface((100,20))
+        self.health_front.fill("green")'''
+        self.health_percent = self.hp/self.max_hp
+        
         
         
         
@@ -45,7 +52,15 @@ class Player(pygame.sprite.Sprite):
         self.check_borders()
         if self.equipped_weapon.type == "Melee":
             self.draw_slash(self.equipped_weapon.pos)
-        
+            
+        self.health_percent = self.hp/self.max_hp
+        '''
+        if self.health_percent <= 0:
+            self.health_percent = 1
+        self.health_front = pygame.Surface((self.health_percent*self.health_back.get_width(), 20))
+        self.health_front.fill("green")
+        pygame.display.get_surface().blit(self.health_back, (0, 0))
+        pygame.display.get_surface().blit(self.health_front, (0, 0))'''
         
     def draw_slash(self, mousePos):
         surface = pygame.display.get_surface()
@@ -55,7 +70,8 @@ class Player(pygame.sprite.Sprite):
                 distance = mousePos - distance
                 
                 angle = math.atan2(distance.y, distance.x)*-180/math.pi
-                image = pygame.transform.rotate(img.slash_img, angle)
+                image = pygame.transform.scale(img.slash_img, (self.rect.width*3, self.rect.width*3))
+                image = pygame.transform.rotate(image, angle)
                 dx, dy = calculate_movement(distance.x, distance.y, self.rect.width/2)
                 image_rect = image.get_rect(center = (self.rect.centerx + dx, self.rect.centery + dy))
                 
@@ -166,6 +182,7 @@ class Player(pygame.sprite.Sprite):
             self.hp -= damage
             self.change_animation(self.hurt_animation, True)
             self.last_hurt = pygame.time.get_ticks()
+            print("HP:",self.hp)
             
     def change_animation(self, animation, reset_frames = False):
         self.current_animation = animation
@@ -182,3 +199,5 @@ class Player(pygame.sprite.Sprite):
             if self.current_animation == self.hurt_animation:
                     self.change_animation(self.idle_animation)
             self.animation_frame = 0
+            
+            
