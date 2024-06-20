@@ -304,9 +304,9 @@ class Boss_enemy(Enemy):
         total_distance_sq = distance.x**2 + distance.y**2
         radius = self.wave_rect.width//2
         radius *= 4/5
-        pygame.draw.circle(pygame.display.get_surface(), "white",self.wave_rect.center - level_sprite.sprite.all_sprites.offset, radius, 2)
         
-        #pygame.draw.circle(pygame.display.get_surface(), "white",self.wave_rect.center - level_sprite.sprite.all_sprites.offset, radius)
+        
+        
         if total_distance_sq < radius**2:
                 self.damage_player()
     
@@ -332,11 +332,11 @@ class Boss_enemy(Enemy):
                 self.dx, self.dy = calculate_movement(distance.x, distance.y, 5*self.speed)
                 self.dashing = True
         
-        if elapsed_time >= self.dash_timer+700:
+        if elapsed_time >= self.dash_timer+800:
             self.dx, self.dy = 0,0
             self.dashing = False
             
-        if elapsed_time >= self.dash_timer+1000:
+        if elapsed_time >= self.dash_timer+1100:
             self.last_dashed = pygame.time.get_ticks()
             
         

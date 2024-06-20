@@ -46,7 +46,7 @@ class Player(pygame.sprite.Sprite):
         
         
     def update(self):
-        self.update_animation_frame(0.1)
+        self.update_animation_frame(0.2)
         self.check_keys()
         self.move()
         self.check_borders()
