@@ -26,6 +26,8 @@ class Player(pygame.sprite.Sprite):
     hurt_cooldown = 300
     last_hurt = -hurt_cooldown
     
+    victory = False
+    
     def __init__(self, level):
         super().__init__(player_sprite)
         # Animation [left, right]

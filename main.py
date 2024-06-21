@@ -5,7 +5,7 @@ import game_play
 import ui
 
 screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
-current_screen = 1
+current_screen = 5
 
 running = True
 while running:
@@ -34,8 +34,13 @@ while running:
         ui.draw_ui(screen)
         if player_sprite.sprite.hp <= 0:
             current_screen = 4
+        if player_sprite.sprite.victory:
+            current_screen = 5
     if current_screen == 4:
-        game_play.game_over(screen)        
+        game_play.game_over(screen)       
+        
+    if current_screen == 5:
+        game_play.victory(screen) 
     
     pygame.display.flip()
     clock.tick(FPS)

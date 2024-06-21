@@ -245,6 +245,8 @@ class Boss_enemy(Enemy):
         super().update()
         #self.rect.center = self.level.rect.center
         self.attack_cycle()
+        if not self.alive():
+            player_sprite.sprite.victory = True
         
         
     def idle_movement(self):
