@@ -13,18 +13,28 @@ class Melee_weapon:
         
         
     def attack(self, pos):
+        mouse_distance = pygame.math.Vector2(pos)
+        mouse_distance -= player_sprite.sprite.rect.center
+        mouse_angle = int(math.atan2(mouse_distance.y, mouse_distance.x)*180/math.pi)
+        if mouse_angle < 0: mouse_angle += 360
+        
         if pygame.time.get_ticks() - self.last_attacked >= self.attack_cooldown:
-            for sprite in level_sprite.sprite.all_sprites:
-                x_d = sprite.rect.x - player_sprite.sprite.rect.x
-                y_d = sprite.rect.y - player_sprite.sprite.rect.y
-                t_d = (x_d**2 + y_d**2)**0.5
-                if t_d <= self.range and sprite.rect.clipline(player_sprite.sprite.rect.center, pos):
-                    if sprite in level_sprite.sprite.enemy_sprites:
-                        player_sprite.sprite.slashing = True
-                        sprite.take_damage(self.damage)
-                        self.last_attacked = pygame.time.get_ticks()
-                        self.pos = pos
+            player_sprite.sprite.slashing = True
+            self.pos = pos
+            self.last_attacked = pygame.time.get_ticks()
+            for sprite in level_sprite.sprite.enemy_sprites:
+                distance = pygame.math.Vector2(sprite.rect.center)
+                distance -= player_sprite.sprite.rect.center
+                total_distance_sq = distance.x**2 + distance.y**2
+                target_angle = int(math.atan2(distance.y, distance.x)*180/math.pi)
+                if target_angle <0: target_angle += 360
+                if total_distance_sq <= self.range**2 and target_angle in range(mouse_angle-90, mouse_angle+90):
+                    sprite.take_damage(self.damage)
                     
+        #mouse_angle*=math.pi/180
+        #pygame.draw.line(pygame.display.get_surface(), "white",(player_sprite.sprite.rect.center-level_sprite.sprite.all_sprites.offset),(player_sprite.sprite.rect.centerx+(90*math.cos(mouse_angle-90))-level_sprite.sprite.all_sprites.offset.x, player_sprite.sprite.rect.centery+(90*math.sin(mouse_angle-90))-level_sprite.sprite.all_sprites.offset.y))
+        #pygame.draw.line(pygame.display.get_surface(), "white",(player_sprite.sprite.rect.center-level_sprite.sprite.all_sprites.offset),(player_sprite.sprite.rect.centerx+(90*math.cos(mouse_angle+90))-level_sprite.sprite.all_sprites.offset.x, player_sprite.sprite.rect.centery+(90*math.sin(mouse_angle+90))-level_sprite.sprite.all_sprites.offset.y))
+        #pygame.draw.line(pygame.display.get_surface(), "white", (player_sprite.sprite.rect.center-level_sprite.sprite.all_sprites.offset), (player_sprite.sprite.rect.centerx, player_sprite.sprite.rect.centery+self.range)-level_sprite.sprite.all_sprites.offset)    
                     
     
                 
@@ -54,7 +64,7 @@ class Magic_weapon:
         
     def attack(self, pos):
         if pygame.time.get_ticks() - self.last_attacked >= self.attack_cooldown:
-            bullet.Flame(level_sprite.sprite.enemy_sprites, player_sprite.sprite.rect.center, pos, self.damage, 25, img.arrow_img, TILESIZE//4, self.range)
+            bullet.Flame(level_sprite.sprite.enemy_sprites, player_sprite.sprite.rect.center, pos, self.damage, 25, img.fireball_img, TILESIZE//4, self.range)
             self.last_attacked = pygame.time.get_ticks()
     
         

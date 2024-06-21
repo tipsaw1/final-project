@@ -16,11 +16,11 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if start_screen.start_button.collide(event.pos) and start_screen.menu == 1:
                 start_screen.menu = 2
-            elif start_screen.ranger_button.collide(event.pos) and start_screen.menu == 2:
-                ranger_select()
+            elif start_screen.archer_button.collide(event.pos) and start_screen.menu == 2:
+                archer_select()
                 start_screen.menu = 3
-            elif start_screen.melee_button.collide(event.pos) and start_screen.menu == 2:
-                melee_select()
+            elif start_screen.knight_button.collide(event.pos) and start_screen.menu == 2:
+                knight_select()
                 start_screen.menu = 3
             elif start_screen.mage_button.collide(event.pos) and start_screen.menu == 2:
                 mage_select()

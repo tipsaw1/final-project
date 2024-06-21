@@ -5,48 +5,61 @@ class Player(pygame.sprite.Sprite):
     # Equipped items are by default none
     equipped_weapon = None
     equipped_armor = None
+    
     # Size is half a tile
     size = 3.2*TILESIZE//4
-    # Image is scaled to size
+    
+    # Animation frame is 0
     animation_frame = 0
+    
+    # Facing right
+    facing = 1
+    
     # Speed is 10
-    speed = 11
+    speed = 10
+    
     # Hp and max hp start at 50
     hp = 150
     max_hp = 150
     
+    # hurt cooldown
     hurt_cooldown = 300
     last_hurt = -hurt_cooldown
     
     def __init__(self, level):
         super().__init__(player_sprite)
-        self.idle_animation = img.player_idle_animation
-        self.walk_animation = img.player_walk_animation
-        self.hurt_animation = img.player_hurt_animation
+        # Animation [left, right]
+        self.idle_animation = [img.archer_idle_animation_left, img.archer_idle_animation_right]
+        self.walk_animation = [img.archer_walk_animation_left, img.archer_walk_animation_right]
+        self.attack_animation = [img.archer_attack_animation_left, img.archer_attack_animation_right]
+        self.hurt_animation = [img.archer_hurt_animation_left, img.archer_hurt_animation_right]
+        
         self.current_animation = self.idle_animation
+        
         # screen is stored
         self.level = level
         self.level.all_sprites.add(self)
         level_sprite.add(self.level)
-        self.image = self.current_animation[0]
+        
+        # Set image to the first frame of the current animation
+        self.image = self.current_animation[self.facing][0]
+        
         # Rect is positioned in the center of the screen
         self.rect = self.image.get_rect(center = self.level.rect.center)
+        
         # dx and dy are 0
         self.dx, self.dy = 0, 0
         self.slashing = False
-        '''
-        self.health_back = pygame.Surface((100, 20))
-        self.health_back.fill("red")
-        self.health_front = pygame.Surface((100,20))
-        self.health_front.fill("green")'''
+        self.player_class = "knight"
         self.health_percent = self.hp/self.max_hp
+        self.frame_speed = 0.1
         
         
         
         
         
     def update(self):
-        self.update_animation_frame(0.2)
+        self.update_animation_frame(self.frame_speed)
         self.check_keys()
         self.move()
         self.check_borders()
@@ -54,13 +67,6 @@ class Player(pygame.sprite.Sprite):
             self.draw_slash(self.equipped_weapon.pos)
             
         self.health_percent = self.hp/self.max_hp
-        '''
-        if self.health_percent <= 0:
-            self.health_percent = 1
-        self.health_front = pygame.Surface((self.health_percent*self.health_back.get_width(), 20))
-        self.health_front.fill("green")
-        pygame.display.get_surface().blit(self.health_back, (0, 0))
-        pygame.display.get_surface().blit(self.health_front, (0, 0))'''
         
     def draw_slash(self, mousePos):
         surface = pygame.display.get_surface()
@@ -70,7 +76,7 @@ class Player(pygame.sprite.Sprite):
                 distance = mousePos - distance
                 
                 angle = math.atan2(distance.y, distance.x)*-180/math.pi
-                image = pygame.transform.scale(img.slash_img, (self.rect.width*3, self.rect.width*3))
+                image = pygame.transform.scale(img.slash_img, (5*self.rect.width//2, 5*self.rect.width//2))
                 image = pygame.transform.rotate(image, angle)
                 dx, dy = calculate_movement(distance.x, distance.y, self.rect.width/2)
                 image_rect = image.get_rect(center = (self.rect.centerx + dx, self.rect.centery + dy))
@@ -94,21 +100,31 @@ class Player(pygame.sprite.Sprite):
             self.dy += 1
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             self.dx -= 1
+            #self.facing = 0
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             self.dx += 1
+            #self.facing = 1
         if keys[pygame.K_SPACE] or pygame.mouse.get_pressed()[0]:
-            if self.equipped_weapon:
+            if self.equipped_weapon and self.current_animation != self.hurt_animation:
                 self.equipped_weapon.attack([offset_mouseX, offset_mouseY])
+                self.change_animation(self.attack_animation)
+                
+        
+        if offset_mouseX < player_sprite.sprite.rect.centerx:
+            self.facing = 0
+        if offset_mouseX > player_sprite.sprite.rect.centerx:
+            self.facing = 1
+            
     def move(self):
         # Moves the player
         if self.dx != 0 or self.dy != 0:
             self.dx, self.dy = calculate_movement(self.dx, self.dy, self.speed)
-            if self.current_animation != self.hurt_animation:
+            if self.current_animation != self.hurt_animation: # add "and self.current_animation != self.attack_animation" to attack when moving
                 self.change_animation(self.walk_animation)
         else:
-            if self.current_animation != self.hurt_animation:
+            if self.current_animation != self.hurt_animation and self.current_animation != self.attack_animation:
                 self.change_animation(self.idle_animation)
-            
+                
         self.rect.x += self.dx
         self.check_collisions("x")
         self.rect.y += self.dy
@@ -182,7 +198,6 @@ class Player(pygame.sprite.Sprite):
             self.hp -= damage
             self.change_animation(self.hurt_animation, True)
             self.last_hurt = pygame.time.get_ticks()
-            print("HP:",self.hp)
             
     def change_animation(self, animation, reset_frames = False):
         self.current_animation = animation
@@ -191,13 +206,25 @@ class Player(pygame.sprite.Sprite):
             self.animation_frame = 0
             
     def update_animation_frame(self, amount):
-        self.image = self.current_animation[int(self.animation_frame)]
+        self.image = self.current_animation[self.facing][int(self.animation_frame)]
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
-        
+
+        # Mage fireball hold
         self.animation_frame += amount
+        if self.current_animation == self.attack_animation and self.player_class == "mage" and pygame.key.get_pressed()[pygame.K_SPACE]:
+            if self.animation_frame > 3:
+                self.animation_frame = 3
+            
+        # Reset frame
         if self.animation_frame >= len(self.current_animation):
-            if self.current_animation == self.hurt_animation:
+            if self.current_animation == self.hurt_animation or self.current_animation == self.attack_animation:
                     self.change_animation(self.idle_animation)
             self.animation_frame = 0
+            
+        # Faster animations
+        if self.current_animation != self.idle_animation:
+            self.frame_speed = 0.15
+        else:
+            self.frame_speed = 0.1
             
             
