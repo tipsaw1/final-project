@@ -14,11 +14,20 @@ class Enemy(pygame.sprite.Sprite):
         self.idle = False
         self.dx, self.dy = 0,0
         self.last_attack = -self.attack_cooldown
-        self.last_hit = -150
         self.direction_modifier = random.choice((1, -1))
         self.start_pos = pos
         self.last_turned = 0
         
+        
+        
+        self.animation_frame = 0
+        self.animation_speed = 0.1
+        self.idle_animation = img.skeleton_melee_idle_animation
+        self.walk_animation = img.skeleton_melee_walk_animation
+        self.hurt_animation = img.skeleton_melee_hurt_animation
+        self.attack_animation = img.skeleton_melee_attack_animation
+        self.current_animation = img.skeleton_melee_idle_animation
+        self.image = self.current_animation[self.animation_frame]
         
         # Changes based on subclass
         self.damage = damage
@@ -26,18 +35,44 @@ class Enemy(pygame.sprite.Sprite):
         self.speed = speed
         
     def update(self):
-        if pygame.time.get_ticks() - self.last_hit >= 150:
-            self.image = self.default_image
         self.check_line_of_sight()
         #self.draw_line_of_sight()
         self.move()
         self.check_borders()
         if self.hp <= 0:
-            if random.choice((0,1,2,4)) == 4:
+            if random.choice((1, 2, 3)) == 2:
                 collectable.Health_item(self.rect.center, (10,10), img.health_item)
             self.kill()
             
+        
             
+        self.update_animation(self.animation_speed)
+    
+
+    def update_animation(self, amount):
+        self.image = self.current_animation[int(self.animation_frame)]
+        self.image = pygame.transform.scale(self.image, (TILESIZE, TILESIZE))
+        self.rect = self.image.get_rect(topleft = self.rect.topleft)
+        if self.current_animation == self.hurt_animation or self.current_animation == self.attack_animation:
+            self.animation_speed = 0.3
+        else:
+            self.animation_speed = 0.1
+        
+        self.animation_frame += amount
+        if (self.dx != 0 or self.dy != 0) and (self.current_animation != self.hurt_animation and self.current_animation != self.attack_animation):
+            self.change_animation(self.walk_animation)
+        
+        if self.animation_frame > len(self.current_animation):
+            if self.current_animation == self.hurt_animation or self.current_animation == self.attack_animation:
+                self.change_animation(self.idle_animation)
+            self.animation_frame = 0 
+            
+    
+    def change_animation(self, animation, reset_frames = False):
+        self.current_animation = animation
+        
+        if reset_frames:
+            self.animation_frame = 0
         
     def idle_movement(self):
         if self.idle == False:
@@ -72,6 +107,8 @@ class Enemy(pygame.sprite.Sprite):
     
     def move(self):
         self.movement_pattern()
+        if self.current_animation == self.hurt_animation and player_sprite.sprite.player_class != "mage":
+            self.dx, self.dy = 0, 0
         self.rect.x += self.dx
         self.collide("x")
         self.rect.y += self.dy
@@ -128,6 +165,7 @@ class Enemy(pygame.sprite.Sprite):
     
     def damage_player(self):
         player_sprite.sprite.take_damage(self.damage)
+        self.change_animation(self.attack_animation)
     # Movement pattern will be based on subclasses
             
     def in_attack_range(self):
@@ -141,14 +179,19 @@ class Enemy(pygame.sprite.Sprite):
         
     def take_damage(self, damage):
         self.hp -= damage
-        self.image = self.hurt_img
-        self.last_hit = pygame.time.get_ticks()
+        self.change_animation(self.hurt_animation, True)
     
     
 class Melee_enemy(Enemy):
+    
     def __init__(self, level, image, pos, damage, hp, speed, size):
         super().__init__(level, image, pos, damage, hp, speed, size)
         self.range = 75
+        self.attack_animation = img.skeleton_melee_attack_animation
+        self.idle_animation = img.skeleton_melee_idle_animation
+        self.hurt_animation = img.skeleton_melee_hurt_animation
+        self.walk_animation = img.skeleton_melee_walk_animation
+        self.current_animation = self.idle_animation
         
     def draw_slash(self, surface):
         if pygame.time.get_ticks() - self.last_attack >= 200:
@@ -156,7 +199,7 @@ class Melee_enemy(Enemy):
             distance = player_sprite.sprite.rect.center - distance
             angle = math.atan2(distance.y, distance.x)
             angle *= -180/math.pi
-            image = pygame.transform.scale(img.slash_img, (self.rect.width*3, self.rect.width*3))
+            image = pygame.transform.scale(img.slash_img, (self.rect.width, self.rect.width))
             image = pygame.transform.rotate(image, angle)
             dx, dy = calculate_movement(distance.x, distance.y, self.rect.width/2)
             image_rect = image.get_rect(center = (self.rect.centerx + dx, self.rect.centery + dy))
@@ -187,15 +230,21 @@ class Melee_enemy(Enemy):
     def update(self):
         super().update()
         self.draw_slash(pygame.display.get_surface())
-
+        
 class Ranged_enemy(Enemy):
     def __init__(self, level, image, pos, damage, hp, speed,size):
         super().__init__(level, image, pos, damage, hp, speed,size)
         self.evade_distance = SCREEN_H//2
+        self.attack_animation = img.skeleton_archer_attack_animation
+        self.idle_animation = img.skeleton_archer_idle_animation
+        self.hurt_animation = img.skeleton_archer_hurt_animation
+        self.walk_animation = img.skeleton_archer_walk_animation
+        self.current_animation = self.idle_animation
         
     def shoot(self):
         if self.can_see_player:
             if pygame.time.get_ticks() - self.last_attack >= self.attack_cooldown:
+                self.change_animation(self.attack_animation)
                 bullet.Bullet(player_sprite, self.rect.center, player_sprite.sprite.rect.center, self.damage, 10, img.arrow_img, (TILESIZE//2, TILESIZE//4))
                 self.last_attack = pygame.time.get_ticks()
             
@@ -224,9 +273,17 @@ class Ranged_enemy(Enemy):
 class Boss_enemy(Enemy):
     def __init__(self, level, image, pos, damage, hp, speed,size):
         super().__init__(level, image, pos, damage, hp, speed,size)
+        # Animations
+        self.attack_animation = img.skeleton_archer_attack_animation
+        self.idle_animation = img.skeleton_archer_idle_animation
+        self.hurt_animation = img.skeleton_archer_hurt_animation
+        self.walk_animation = img.skeleton_archer_walk_animation
+        self.current_animation = self.idle_animation
+        
+        
         # Attacks
         self.default_attack_cooldown = self.attack_cooldown
-        self.far_attack_range = 250
+        self.far_attack_range = 400
         
         # Wave attacks
         self.wave_attacking = False
@@ -243,6 +300,8 @@ class Boss_enemy(Enemy):
         
     def update(self):
         super().update()
+        self.image = pygame.transform.scale(self.image, (150,150))
+        self.rect = self.image.get_rect(topleft = self.rect.topleft)
         #self.rect.center = self.level.rect.center
         self.attack_cycle()
         if not self.alive():
@@ -257,10 +316,8 @@ class Boss_enemy(Enemy):
         if pygame.time.get_ticks() - self.last_attack >= self.attack_cooldown:
             distance = pygame.math.Vector2(player_sprite.sprite.rect.center)
             distance -= self.rect.center
-            total_distance_sq = distance.x**2 + distance.y**2
-            if total_distance_sq > self.far_attack_range**2:
+            if not self.dashing:
                 self.far_attack()
-            else:
                 self.mid_attack()
             self.last_attack = pygame.time.get_ticks()
                 
@@ -273,6 +330,7 @@ class Boss_enemy(Enemy):
                 
     def far_attack(self):
         self.attack_cooldown = 100
+        self.change_animation(self.attack_animation)
         bullet.Bullet(player_sprite, self.rect.center, player_sprite.sprite.rect.center, self.damage, 20, img.arrow_img, (TILESIZE//2, TILESIZE//4))
         
     def close_attack(self):
@@ -289,12 +347,12 @@ class Boss_enemy(Enemy):
         self.wave_rect = self.wave_img.get_rect()
         self.wave_rect.center = self.rect.center
         self.last_wave_attack_update = pygame.time.get_ticks()
-        if self.wave_rect.width >= SCREEN_H:
+        if self.wave_rect.width >= 3*SCREEN_H//4:
             self.end_wave_attack()
             
     def end_wave_attack(self):
             self.wave_attacking = False
-            self.wave_img = pygame.transform.scale(img.wave_attack_img, (self.rect.width, self.rect.height))
+            self.wave_img = pygame.transform.scale(img.wave_attack_img, (self.rect.width//2, self.rect.height//2))
             self.wave_rect = self.wave_img.get_rect()
             
     def draw_wave_attack(self):
@@ -327,43 +385,17 @@ class Boss_enemy(Enemy):
         if elapsed_time >= self.dash_timer:
             if not self.dashing:
                 self.dx, self.dy = 0,0
-            self.end_wave_attack()
+                self.end_wave_attack()
             
-        if elapsed_time >= self.dash_timer+500:
+        if elapsed_time >= self.dash_timer+300:
             if not self.dashing:
                 self.dx, self.dy = calculate_movement(distance.x, distance.y, 5*self.speed)
                 self.dashing = True
         
         if elapsed_time >= self.dash_timer+800:
             self.dx, self.dy = 0,0
-            self.dashing = False
             
         if elapsed_time >= self.dash_timer+1100:
             self.last_dashed = pygame.time.get_ticks()
+            self.dashing = False
             
-        
-    
-    
-        
-        
-# Dungeon Enemies
-class Goblin(Melee_enemy):
-    def __init__(self, level, image, pos):
-        super().__init__(level, image, pos, 10, 8, 8)
-
-
-class Troll(Melee_enemy):
-    def __init__(self, level, image, pos):
-        super().__init__(self, level, image, pos, 50, 20, 5)
-        
-# Kings enemies
-class Kings_knight(Melee_enemy):
-    def __init__(self, level, image, pos):
-        super().__init__(self, level, image, pos, 80, 25, 7)
-        self.hp = 80
-        self.damage = 25
-class Kings_archer(Ranged_enemy):
-    def __init__(self, level, image, pos):
-        super().__init__(self, level, image, pos, 50, 35, 7)
-        self.hp = 50
-        self.damage = 35

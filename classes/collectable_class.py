@@ -19,7 +19,7 @@ class Health_item(Collectable):
         super().__init__(pos, size, image)
     
     def collect(self):
-        player_sprite.sprite.hp += 15
+        player_sprite.sprite.hp += 20
         player_sprite.sprite.hp = min(player_sprite.sprite.max_hp, player_sprite.sprite.hp)
         print(player_sprite.sprite.hp)
         self.kill()

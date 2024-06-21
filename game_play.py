@@ -20,3 +20,4 @@ def victory(surface):
     player_sprite.sprite.image = pygame.transform.scale(player_sprite.sprite.image, (80,80))
     player_sprite.sprite.rect = player_sprite.sprite.image.get_rect(midleft = victory_rect.midright)
     player_sprite.draw(surface)
+    

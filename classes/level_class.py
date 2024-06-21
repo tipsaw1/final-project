@@ -77,7 +77,7 @@ class Level(pygame.sprite.Sprite):
         
         # Creates default enemy (will probably change when we add subclasses)
         if letter == "!":
-            enemy.Melee_enemy(self, img.enemy_img_1, pos, 5, 25, 7, TILESIZE//2)
+            enemy.Melee_enemy(self, img.enemy_img_1, pos, 5, 30, 7, TILESIZE//2)
         
         if letter == ">":
             enemy.Ranged_enemy(self, img.enemy_img_2, pos, 5, 20, 7, TILESIZE//2)

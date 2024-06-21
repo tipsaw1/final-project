@@ -3,6 +3,7 @@ import random
 import math
 import assets.images as img
 import assets.maps as maps
+import assets.Sounds as sound
 pygame.init()
 
 # Constants
@@ -116,3 +117,4 @@ class ButtonGroup():
         
 start_button_group = ButtonGroup()
 class_button_group = ButtonGroup()
+pause_button_group = ButtonGroup()

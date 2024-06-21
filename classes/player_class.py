@@ -18,9 +18,9 @@ class Player(pygame.sprite.Sprite):
     # Speed is 10
     speed = 10
     
-    # Hp and max hp start at 50
-    hp = 150
-    max_hp = 150
+    # Hp and max hp start at 200
+    hp = 250
+    max_hp = 250
     
     # hurt cooldown
     hurt_cooldown = 300
@@ -55,7 +55,7 @@ class Player(pygame.sprite.Sprite):
         self.slashing = False
         self.player_class = "knight"
         self.health_percent = self.hp/self.max_hp
-        self.frame_speed = 0.1
+        self.frame_speed = 0.09
         
         
         
@@ -79,7 +79,7 @@ class Player(pygame.sprite.Sprite):
                 distance = mousePos - distance
                 
                 angle = math.atan2(distance.y, distance.x)*-180/math.pi
-                image = pygame.transform.scale(img.slash_img, (5*self.rect.width//2, 5*self.rect.width//2))
+                image = pygame.transform.scale(img.slash_img, (self.equipped_weapon.range+self.rect.width, self.equipped_weapon.range+self.rect.width))
                 image = pygame.transform.rotate(image, angle)
                 dx, dy = calculate_movement(distance.x, distance.y, self.rect.width/2)
                 image_rect = image.get_rect(center = (self.rect.centerx + dx, self.rect.centery + dy))
