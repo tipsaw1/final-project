@@ -83,7 +83,7 @@ class Level(pygame.sprite.Sprite):
             enemy.Ranged_enemy(self, img.enemy_img_2, pos, 5, 20, 7, TILESIZE//2)
             
         if letter == "B":
-            enemy.Boss_enemy(self, img.boss_enemy_img, pos, 20, 500, 5, TILESIZE*2.5)
+            enemy.Boss_enemy(self, img.boss_enemy_img, pos, 25, 500, 5, TILESIZE*2.5)
             
     # Set adjacent rooms
     def set_adjacents(self, up = None, down = None, left = None, right = None):

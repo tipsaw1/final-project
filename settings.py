@@ -15,7 +15,6 @@ FPS = 60
 TILESIZE = 64
 button_font = pygame.font.SysFont("impact", 100)
 
-
 # Player sprite accesible from any file
 player_sprite = pygame.sprite.GroupSingle()
 # Level sprite

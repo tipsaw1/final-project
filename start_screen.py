@@ -20,7 +20,6 @@ mage_button.rect.left = archer_button.rect.right + 50
 knight_button.rect.right = archer_button.rect.left - 50
 test = button_font.render("SELECT A CLASS:", True, "white")
 test_rect = test.get_rect(midtop = (SCREEN_W//2, 50))
-menu = 1
 
 
 def start():

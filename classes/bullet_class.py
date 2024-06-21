@@ -3,12 +3,13 @@ from settings import *
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, target_group, start_pos, target_pos, damage, speed, image, size):
         super().__init__(level_sprite.sprite.all_sprites, level_sprite.sprite.bullet_sprites)
-        self.image = pygame.transform.scale(image, (size, size))
-        self.rect = image.get_rect(center = start_pos)
         self.target_group = target_group
         self.damage = damage
         x_distance = target_pos[0] - start_pos[0]
         y_distance = target_pos[1] - start_pos[1]
+        self.image = pygame.transform.scale(image, (size[0], size[1]))
+        self.image = pygame.transform.rotate(self.image, math.atan2(-y_distance, x_distance)*180/math.pi)
+        self.rect = image.get_rect(center = start_pos)
         self.dx, self.dy = calculate_movement(x_distance, y_distance, speed)
         
     def update(self):

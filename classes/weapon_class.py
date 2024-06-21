@@ -49,7 +49,7 @@ class Ranged_weapon:
         
     def attack(self, pos):
         if pygame.time.get_ticks() - self.last_attacked >= self.attack_cooldown:
-            bullet.Bullet(level_sprite.sprite.enemy_sprites, player_sprite.sprite.rect.center, pos, self.damage, 25, img.arrow_img, TILESIZE//4)
+            bullet.Bullet(level_sprite.sprite.enemy_sprites, player_sprite.sprite.rect.center, pos, self.damage, 25, img.arrow_img, (TILESIZE//2, TILESIZE//4))
             self.last_attacked = pygame.time.get_ticks()
         
         
@@ -64,7 +64,7 @@ class Magic_weapon:
         
     def attack(self, pos):
         if pygame.time.get_ticks() - self.last_attacked >= self.attack_cooldown:
-            bullet.Flame(level_sprite.sprite.enemy_sprites, player_sprite.sprite.rect.center, pos, self.damage, 25, img.fireball_img, TILESIZE//4, self.range)
+            bullet.Flame(level_sprite.sprite.enemy_sprites, player_sprite.sprite.rect.center, pos, self.damage, 25, img.fireball_img, (TILESIZE//4,TILESIZE//4), self.range)
             self.last_attacked = pygame.time.get_ticks()
     
         

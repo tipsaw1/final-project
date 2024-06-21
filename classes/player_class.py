@@ -33,6 +33,7 @@ class Player(pygame.sprite.Sprite):
         self.walk_animation = [img.archer_walk_animation_left, img.archer_walk_animation_right]
         self.attack_animation = [img.archer_attack_animation_left, img.archer_attack_animation_right]
         self.hurt_animation = [img.archer_hurt_animation_left, img.archer_hurt_animation_right]
+        self.dead_image = [img.archer_death_left, img.archer_death_right]
         
         self.current_animation = self.idle_animation
         
@@ -206,21 +207,22 @@ class Player(pygame.sprite.Sprite):
             self.animation_frame = 0
             
     def update_animation_frame(self, amount):
+        #if self.current_animation == self.attack_animation and self.player_class == "mage" and (pygame.key.get_pressed()[pygame.K_SPACE] or pygame.mouse.get_pressed()[0]):
+            #if self.animation_frame > 3:
+                #self.animation_frame = 3
         self.image = self.current_animation[self.facing][int(self.animation_frame)]
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
 
         # Mage fireball hold
         self.animation_frame += amount
-        if self.current_animation == self.attack_animation and self.player_class == "mage" and pygame.key.get_pressed()[pygame.K_SPACE]:
-            if self.animation_frame > 3:
-                self.animation_frame = 3
             
         # Reset frame
-        if self.animation_frame >= len(self.current_animation):
+        if self.animation_frame >= len(self.current_animation[self.facing]):
             if self.current_animation == self.hurt_animation or self.current_animation == self.attack_animation:
                     self.change_animation(self.idle_animation)
             self.animation_frame = 0
             
+        
         # Faster animations
         if self.current_animation != self.idle_animation:
             self.frame_speed = 0.15

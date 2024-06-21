@@ -196,7 +196,7 @@ class Ranged_enemy(Enemy):
     def shoot(self):
         if self.can_see_player:
             if pygame.time.get_ticks() - self.last_attack >= self.attack_cooldown:
-                bullet.Bullet(player_sprite, self.rect.center, player_sprite.sprite.rect.center, self.damage, 10, img.arrow_img, TILESIZE//4)
+                bullet.Bullet(player_sprite, self.rect.center, player_sprite.sprite.rect.center, self.damage, 10, img.arrow_img, (TILESIZE//2, TILESIZE//4))
                 self.last_attack = pygame.time.get_ticks()
             
     def update(self):
@@ -271,7 +271,7 @@ class Boss_enemy(Enemy):
                 
     def far_attack(self):
         self.attack_cooldown = 100
-        bullet.Bullet(player_sprite, self.rect.center, player_sprite.sprite.rect.center, self.damage, 20, img.arrow_img, TILESIZE//4)
+        bullet.Bullet(player_sprite, self.rect.center, player_sprite.sprite.rect.center, self.damage, 20, img.arrow_img, (TILESIZE//2, TILESIZE//4))
         
     def close_attack(self):
         self.attack_cooldown = self.default_attack_cooldown

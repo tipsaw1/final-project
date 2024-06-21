@@ -15,32 +15,37 @@ mage_idle_animation_left = load_animation("assets/mage_sprites/left/idle/mage_id
 mage_walk_animation_left = load_animation("assets/mage_sprites/left/walk/mage_walk_1.png","assets/mage_sprites/left/walk/mage_walk_2.png","assets/mage_sprites/left/walk/mage_walk_3.png","assets/mage_sprites/left/walk/mage_walk_4.png")
 mage_hurt_animation_left = load_animation("assets/mage_sprites/left/other/mage_injured.png","assets/mage_sprites/left/other/mage_ghost.png","assets/mage_sprites/left/other/mage_injured.png","assets/mage_sprites/left/other/mage_ghost.png")
 mage_attack_animation_left = load_animation("assets/mage_sprites/left/attack/mage_attack_1.png","assets/mage_sprites/left/attack/mage_attack_2.png","assets/mage_sprites/left/attack/mage_attack_3.png","assets/mage_sprites/left/attack/mage_attack_4.png")
+mage_death_left = pygame.image.load("assets/mage_sprites/left/other/mage_dead.png")
 
 mage_idle_animation_right = load_animation("assets/mage_sprites/right/idle/mage_idle_1.png","assets/mage_sprites/right/idle/mage_idle_2.png","assets/mage_sprites/right/idle/mage_idle_3.png","assets/mage_sprites/right/idle/mage_idle_4.png")
 mage_walk_animation_right = load_animation("assets/mage_sprites/right/walk/mage_walk_1.png","assets/mage_sprites/right/walk/mage_walk_2.png","assets/mage_sprites/right/walk/mage_walk_3.png","assets/mage_sprites/right/walk/mage_walk_4.png")
 mage_hurt_animation_right = load_animation("assets/mage_sprites/right/other/mage_injured.png","assets/mage_sprites/right/other/mage_ghost.png","assets/mage_sprites/right/other/mage_injured.png","assets/mage_sprites/right/other/mage_ghost.png")
 mage_attack_animation_right = load_animation("assets/mage_sprites/right/attack/mage_attack_1.png","assets/mage_sprites/right/attack/mage_attack_2.png","assets/mage_sprites/right/attack/mage_attack_3.png","assets/mage_sprites/right/attack/mage_attack_4.png")
+mage_death_right = pygame.image.load("assets/mage_sprites/right/other/mage_dead.png")
 
 archer_idle_animation_left = load_animation("assets/archer_sprites/left/idle/archer_idle_1.png","assets/archer_sprites/left/idle/archer_idle_2.png","assets/archer_sprites/left/idle/archer_idle_3.png","assets/archer_sprites/left/idle/archer_idle_4.png")
 archer_walk_animation_left = load_animation("assets/archer_sprites/left/walk/archer_walk_1.png","assets/archer_sprites/left/walk/archer_walk_2.png","assets/archer_sprites/left/walk/archer_walk_3.png","assets/archer_sprites/left/walk/archer_walk_4.png")
 archer_hurt_animation_left = load_animation("assets/archer_sprites/left/other/archer_injured.png","assets/archer_sprites/left/other/archer_ghost.png","assets/archer_sprites/left/other/archer_injured.png","assets/archer_sprites/left/other/archer_ghost.png")
 archer_attack_animation_left = load_animation("assets/archer_sprites/left/attack/archer_attack_1.png","assets/archer_sprites/left/attack/archer_attack_2.png","assets/archer_sprites/left/attack/archer_attack_3.png","assets/archer_sprites/left/attack/archer_attack_4.png")
+archer_death_left = pygame.image.load("assets/archer_sprites/left/other/archer_dead.png")
 
 archer_idle_animation_right = load_animation("assets/archer_sprites/right/idle/archer_idle_1.png","assets/archer_sprites/right/idle/archer_idle_2.png","assets/archer_sprites/right/idle/archer_idle_3.png","assets/archer_sprites/right/idle/archer_idle_4.png")
 archer_walk_animation_right = load_animation("assets/archer_sprites/right/walk/archer_walk_1.png","assets/archer_sprites/right/walk/archer_walk_2.png","assets/archer_sprites/right/walk/archer_walk_3.png","assets/archer_sprites/right/walk/archer_walk_4.png")
 archer_hurt_animation_right = load_animation("assets/archer_sprites/right/other/archer_injured.png","assets/archer_sprites/right/other/archer_ghost.png","assets/archer_sprites/right/other/archer_injured.png","assets/archer_sprites/right/other/archer_ghost.png")
 archer_attack_animation_right = load_animation("assets/archer_sprites/right/attack/archer_attack_1.png","assets/archer_sprites/right/attack/archer_attack_2.png","assets/archer_sprites/right/attack/archer_attack_3.png","assets/archer_sprites/right/attack/archer_attack_4.png")
+archer_death_right = pygame.image.load("assets/archer_sprites/right/other/archer_dead.png")
 
 knight_idle_animation_left = load_animation("assets/knight_sprites/left/idle/knight_idle_1.png","assets/knight_sprites/left/idle/knight_idle_2.png","assets/knight_sprites/left/idle/knight_idle_3.png","assets/knight_sprites/left/idle/knight_idle_4.png")
 knight_walk_animation_left = load_animation("assets/knight_sprites/left/walk/knight_walk_1.png","assets/knight_sprites/left/walk/knight_walk_2.png","assets/knight_sprites/left/walk/knight_walk_3.png","assets/knight_sprites/left/walk/knight_walk_4.png")
 knight_hurt_animation_left = load_animation("assets/knight_sprites/left/other/knight_injured.png","assets/knight_sprites/left/other/knight_ghost.png","assets/knight_sprites/left/other/knight_injured.png","assets/knight_sprites/left/other/knight_ghost.png")
 knight_attack_animation_left = load_animation("assets/knight_sprites/left/attack/knight_attack_1.png","assets/knight_sprites/left/attack/knight_attack_2.png","assets/knight_sprites/left/attack/knight_attack_3.png","assets/knight_sprites/left/attack/knight_attack_4.png")
+knight_death_left = pygame.image.load("assets/knight_sprites/left/other/knight_dead.png")
 
 knight_idle_animation_right = load_animation("assets/knight_sprites/right/idle/knight_idle_1.png","assets/knight_sprites/right/idle/knight_idle_2.png","assets/knight_sprites/right/idle/knight_idle_3.png","assets/knight_sprites/right/idle/knight_idle_4.png")
 knight_walk_animation_right = load_animation("assets/knight_sprites/right/walk/knight_walk_1.png","assets/knight_sprites/right/walk/knight_walk_2.png","assets/knight_sprites/right/walk/knight_walk_3.png","assets/knight_sprites/right/walk/knight_walk_4.png")
 knight_hurt_animation_right = load_animation("assets/knight_sprites/right/other/knight_injured.png","assets/knight_sprites/right/other/knight_ghost.png","assets/knight_sprites/right/other/knight_injured.png","assets/knight_sprites/right/other/knight_ghost.png")
 knight_attack_animation_right = load_animation("assets/knight_sprites/right/attack/knight_attack_1.png","assets/knight_sprites/right/attack/knight_attack_2.png","assets/knight_sprites/right/attack/knight_attack_3.png","assets/knight_sprites/right/attack/knight_attack_4.png")
-
+knight_death_right = pygame.image.load("assets/knight_sprites/right/other/knight_dead.png")
 
 tile_1 = pygame.image.load("assets/images/tile_1.jpg")
 tile_2 = pygame.image.load("assets/images/tile_2.jpg")
@@ -67,8 +72,8 @@ slash_img = pygame.image.load("assets/images/slash.png")
 wave_attack_img = pygame.image.load("assets/images/fire_ring.png")
 
 # Arrow
-arrow_img = pygame.Surface((20,20))
-arrow_img.fill('yellow')
+arrow_img = pygame.image.load("assets/archer_sprites/right/other/arrow.png")
+
 
 fireball_img = pygame.image.load("assets/mage_sprites/fireball.png")
 # Items

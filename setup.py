@@ -26,18 +26,23 @@ def mage_select():
     p1.walk_animation = [img.mage_walk_animation_left,img.mage_walk_animation_right]
     p1.attack_animation = [img.mage_attack_animation_left,img.mage_attack_animation_right]
     p1.hurt_animation = [img.mage_hurt_animation_left,img.mage_hurt_animation_right]
+    p1.dead_image = [img.mage_death_left, img.mage_death_right]
     p1.player_class = "mage"
+    
 def archer_select():
     p1.equipped_weapon = weapon.Ranged_weapon(10, 300)
     p1.idle_animation = [img.archer_idle_animation_left,img.archer_idle_animation_right]
     p1.walk_animation = [img.archer_walk_animation_left,img.archer_walk_animation_right]
     p1.attack_animation = [img.archer_attack_animation_left,img.archer_attack_animation_right]
     p1.hurt_animation = [img.archer_hurt_animation_left,img.archer_hurt_animation_right]
+    p1.dead_image = [img.archer_death_left, img.archer_death_right]
     p1.player_class = "archer"
+    
 def knight_select():
     p1.equipped_weapon = weapon.Melee_weapon(10, TILESIZE*2, 500)
     p1.idle_animation = [img.knight_idle_animation_left, img.knight_idle_animation_right]
     p1.walk_animation = [img.knight_walk_animation_left, img.knight_walk_animation_right]
     p1.attack_animation = [img.knight_attack_animation_left,img.knight_attack_animation_right]
     p1.hurt_animation = [img.knight_hurt_animation_left,img.knight_hurt_animation_right]
+    p1.dead_image = [img.knight_death_left, img.knight_death_right]
     p1.player_class = "knight"
