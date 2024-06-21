@@ -62,9 +62,9 @@ class Enemy(pygame.sprite.Sprite):
         if (self.dx != 0 or self.dy != 0) and (self.current_animation != self.hurt_animation and self.current_animation != self.attack_animation):
             self.change_animation(self.walk_animation)
         
-        if self.animation_frame > len(self.current_animation):
+        if self.animation_frame >= len(self.current_animation):
             if self.current_animation == self.hurt_animation or self.current_animation == self.attack_animation:
-                self.change_animation(self.idle_animation)
+                self.change_animation(self.idle_animation, True)
             self.animation_frame = 0 
             
     
