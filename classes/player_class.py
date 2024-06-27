@@ -48,7 +48,7 @@ class Player(pygame.sprite.Sprite):
         self.image = self.current_animation[self.facing][0]
         
         # Rect is positioned in the center of the screen
-        self.rect = self.image.get_rect(center = self.level.rect.center)
+        self.rect = self.image.get_rect(topleft = self.level.player_spawn)
         
         # dx and dy are 0
         self.dx, self.dy = 0, 0
@@ -112,6 +112,15 @@ class Player(pygame.sprite.Sprite):
                 self.equipped_weapon.attack([offset_mouseX, offset_mouseY])
                 self.change_animation(self.attack_animation)
                 
+            for npc in self.level.npc_sprites.sprites():
+                distance = pygame.math.Vector2(npc.rect.x, npc.rect.y)
+                distance -= (self.rect.x, self.rect.y)
+                total_distance_sq = distance.x**2 + distance.y**2
+                if total_distance_sq < 100**2:
+                    npc.interact()
+                else:
+                    npc.displaying_dialogue = False
+                
         
         if offset_mouseX < player_sprite.sprite.rect.centerx:
             self.facing = 0
@@ -141,6 +150,7 @@ class Player(pygame.sprite.Sprite):
         # Returns a sprite if you collide with it
         # Returns None if you aren't colliding with anything
         collisions = pygame.sprite.spritecollide(self, self.level.obstacle_sprites, False)
+        collisions += pygame.sprite.spritecollide(self, self.level.npc_sprites, False)
         # If you are colliding with something that isn't yourself
         for collision in collisions:
             if direction == "x":
@@ -204,18 +214,18 @@ class Player(pygame.sprite.Sprite):
             
     def change_animation(self, animation, reset_frames = False):
         self.current_animation = animation
-        self.rect = self.image.get_rect(topleft = self.rect.topleft)
+        
+        if self.animation_frame > len(self.current_animation[self.facing]):
+            self.animation_frame = len(self.current_animation[self.facing])
+            
         if reset_frames:
             self.animation_frame = 0
             
     def update_animation_frame(self, amount):
-        #if self.current_animation == self.attack_animation and self.player_class == "mage" and (pygame.key.get_pressed()[pygame.K_SPACE] or pygame.mouse.get_pressed()[0]):
-            #if self.animation_frame > 3:
-                #self.animation_frame = 3
         self.image = self.current_animation[self.facing][int(self.animation_frame)]
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
+        self.rect = self.image.get_rect(topleft = self.rect.topleft)
 
-        # Mage fireball hold
         self.animation_frame += amount
             
         # Reset frame

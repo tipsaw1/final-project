@@ -2,13 +2,9 @@ from settings import *
 import classes.bullet_class as bullet
 import classes.collectable_class as collectable
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, level, image, pos, damage, hp, speed, size):
+    def __init__(self, level, pos, damage, hp, speed, size, current_animation):
         super().__init__(level.enemy_sprites, level.all_sprites)
         self.level = level
-        self.default_image = pygame.transform.scale(image, (size, size))
-        self.hurt_img = pygame.transform.scale(img.enemy_hurt_img,(size, size))
-        self.image = pygame.transform.scale(image, (size, size))
-        self.rect = self.image.get_rect(topleft = pos)
         self.can_see_player = False
         self.attack_cooldown = 500
         self.idle = False
@@ -18,16 +14,18 @@ class Enemy(pygame.sprite.Sprite):
         self.start_pos = pos
         self.last_turned = 0
         
-        
-        
+        #Animations
         self.animation_frame = 0
         self.animation_speed = 0.1
         self.idle_animation = img.skeleton_melee_idle_animation
         self.walk_animation = img.skeleton_melee_walk_animation
         self.hurt_animation = img.skeleton_melee_hurt_animation
         self.attack_animation = img.skeleton_melee_attack_animation
-        self.current_animation = img.skeleton_melee_idle_animation
+        self.current_animation = current_animation
         self.image = self.current_animation[self.animation_frame]
+        
+        self.size = size
+        self.rect = self.image.get_rect(topleft = pos)
         
         # Changes based on subclass
         self.damage = damage
@@ -51,7 +49,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def update_animation(self, amount):
         self.image = self.current_animation[int(self.animation_frame)]
-        self.image = pygame.transform.scale(self.image, (TILESIZE, TILESIZE))
+        self.image = pygame.transform.scale(self.image, (self.size, self.size))
         self.rect = self.image.get_rect(topleft = self.rect.topleft)
         if self.current_animation == self.hurt_animation or self.current_animation == self.attack_animation:
             self.animation_speed = 0.3
@@ -70,6 +68,8 @@ class Enemy(pygame.sprite.Sprite):
     
     def change_animation(self, animation, reset_frames = False):
         self.current_animation = animation
+        if self.animation_frame > len(self.current_animation):
+            self.animation_frame = len(self.current_animation)
         
         if reset_frames:
             self.animation_frame = 0
@@ -184,8 +184,8 @@ class Enemy(pygame.sprite.Sprite):
     
 class Melee_enemy(Enemy):
     
-    def __init__(self, level, image, pos, damage, hp, speed, size):
-        super().__init__(level, image, pos, damage, hp, speed, size)
+    def __init__(self, level, pos, damage, hp, speed, size):
+        super().__init__(level, pos, damage, hp, speed, size, img.skeleton_melee_idle_animation)
         self.range = 75
         self.attack_animation = img.skeleton_melee_attack_animation
         self.idle_animation = img.skeleton_melee_idle_animation
@@ -232,8 +232,8 @@ class Melee_enemy(Enemy):
         self.draw_slash(pygame.display.get_surface())
         
 class Ranged_enemy(Enemy):
-    def __init__(self, level, image, pos, damage, hp, speed,size):
-        super().__init__(level, image, pos, damage, hp, speed,size)
+    def __init__(self, level, pos, damage, hp, speed,size):
+        super().__init__(level, pos, damage, hp, speed, size, img.skeleton_archer_idle_animation)
         self.evade_distance = SCREEN_H//2
         self.attack_animation = img.skeleton_archer_attack_animation
         self.idle_animation = img.skeleton_archer_idle_animation
@@ -271,8 +271,8 @@ class Ranged_enemy(Enemy):
             self.idle_movement()
         
 class Boss_enemy(Enemy):
-    def __init__(self, level, image, pos, damage, hp, speed,size):
-        super().__init__(level, image, pos, damage, hp, speed,size)
+    def __init__(self, level, pos, damage, hp, speed,size):
+        super().__init__(level, pos, damage, hp, speed, size, img.skeleton_archer_idle_animation)
         # Animations
         self.attack_animation = img.skeleton_archer_attack_animation
         self.idle_animation = img.skeleton_archer_idle_animation

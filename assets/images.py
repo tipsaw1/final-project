@@ -78,6 +78,8 @@ boss_enemy_img.fill("green")
 enemy_hurt_img = pygame.Surface((50,50))
 enemy_hurt_img.fill("white")
 
+# Npcs
+
 # Slash
 slash_img = pygame.image.load("assets/images/slash.png")
 wave_attack_img = pygame.image.load("assets/images/fire_ring.png")
@@ -85,8 +87,9 @@ wave_attack_img = pygame.image.load("assets/images/fire_ring.png")
 # Arrow
 arrow_img = pygame.image.load("assets/archer_sprites/right/other/arrow.png")
 
-
+# Fireball
 fireball_img = pygame.image.load("assets/mage_sprites/fireball.png")
+
 # Items
 health_item = pygame.Surface((50,50))
 health_item.fill("green")

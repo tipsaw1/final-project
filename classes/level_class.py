@@ -2,6 +2,7 @@ from settings import *
 import classes.enemy_class as enemy
 import classes.obstacle_class as obstacle
 import classes.tile_class as tile
+import classes.npc_class as npc
 
 # Different rooms/screens
 class Level(pygame.sprite.Sprite):    
@@ -16,6 +17,9 @@ class Level(pygame.sprite.Sprite):
         width = len(self.map[0])*TILESIZE
         self.rect = pygame.Rect(0,0, width, height)
         
+        #Player start position
+        self.player_spawn = (SCREEN_W//2,SCREEN_H//2)
+        
         # Puts current level into the level sprite group
         # Level sprite is a GroupSingle()
         level_sprite.add(self)
@@ -28,10 +32,13 @@ class Level(pygame.sprite.Sprite):
         self.obstacle_sprites = OffsetGroup()
         # Stores the floor tiles in the room
         self.tile_sprites = OffsetGroup()
-        
+        # Store items
         self.item_sprites = OffsetGroup()
         # Stores the bullets in the room        
         self.bullet_sprites = OffsetGroup()
+        # Store npcs
+        self.npc_sprites = OffsetGroup()
+        
         # Stores the adjacent levels
         self.adjacents = {
             "up": None,
@@ -75,15 +82,21 @@ class Level(pygame.sprite.Sprite):
         if letter == "X":
             obstacle.Obstacle(self, img.wall_img_1, pos)
         
-        # Creates default enemy (will probably change when we add subclasses)
+        # Creates enemies
+        if letter == "?":
+            npc.Npc(self, pos, TILESIZE, img.player_idle_animation, img.player_walk_animation, npc.Dialogue(["123", "abc", "do-re-mi"]))
+        
         if letter == "!":
-            enemy.Melee_enemy(self, img.enemy_img_1, pos, 15, 30, 7, TILESIZE//2)
+            enemy.Melee_enemy(self, pos, 15, 30, 7, TILESIZE)
         
         if letter == ">":
-            enemy.Ranged_enemy(self, img.enemy_img_2, pos, 10, 20, 7, TILESIZE//2)
+            enemy.Ranged_enemy(self, pos, 10, 20, 7, TILESIZE)
             
         if letter == "B":
-            enemy.Boss_enemy(self, img.boss_enemy_img, pos, 25, 500, 5, TILESIZE*2.5)
+            enemy.Boss_enemy(self, pos, 25, 500, 5, TILESIZE*2.5)
+        
+        if letter == "P":
+            self.player_spawn = pos
             
     # Set adjacent rooms
     def set_adjacents(self, up = None, down = None, left = None, right = None):
