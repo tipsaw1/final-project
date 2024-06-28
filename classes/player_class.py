@@ -28,7 +28,7 @@ class Player(pygame.sprite.Sprite):
     
     victory = False
     
-    def __init__(self, level):
+    def __init__(self, game):
         super().__init__(player_sprite)
         # Animation [left, right]
         self.idle_animation = [img.archer_idle_animation_left, img.archer_idle_animation_right]
@@ -40,9 +40,9 @@ class Player(pygame.sprite.Sprite):
         self.current_animation = self.idle_animation
         
         # screen is stored
-        self.level = level
+        self.game = game
+        self.level = self.game.current_level
         self.level.all_sprites.add(self)
-        level_sprite.add(self.level)
         
         # Set image to the first frame of the current animation
         self.image = self.current_animation[self.facing][0]
@@ -69,6 +69,9 @@ class Player(pygame.sprite.Sprite):
         if self.equipped_weapon.type == "Melee":
             self.draw_slash(self.equipped_weapon.pos)
             
+        if self.hp <= 0:
+            self.game.current_screen = "gameover"
+            
         self.health_percent = self.hp/self.max_hp
         
     def draw_slash(self, mousePos):
@@ -85,7 +88,7 @@ class Player(pygame.sprite.Sprite):
                 image_rect = image.get_rect(center = (self.rect.centerx + dx, self.rect.centery + dy))
                 
                 pos = pygame.math.Vector2(image_rect.x, image_rect.y)
-                pos -= level_sprite.sprite.all_sprites.offset
+                pos -= self.game.current_level.all_sprites.offset
                 image_rect.topleft = pos
                 surface.blit(image, image_rect)
             else:
@@ -95,8 +98,8 @@ class Player(pygame.sprite.Sprite):
         # Store keys and change dx/dy
         keys = pygame.key.get_pressed()
         mouseX, mouseY = pygame.mouse.get_pos()
-        offset_mouseX = mouseX+level_sprite.sprite.all_sprites.offset.x
-        offset_mouseY = mouseY+level_sprite.sprite.all_sprites.offset.y
+        offset_mouseX = mouseX+self.game.current_level.all_sprites.offset.x
+        offset_mouseY = mouseY+self.game.current_level.all_sprites.offset.y
         if keys[pygame.K_UP] or keys[pygame.K_w]:
             self.dy -= 1
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
@@ -176,7 +179,7 @@ class Player(pygame.sprite.Sprite):
         # another screen to the left, you go to the screen to the left
         if self.rect.centerx < self.level.rect.left and self.level.adjacents["left"]:
             self.level = self.level.adjacents["left"]
-            level_sprite.add(self.level)
+            self.game.current_level = self.level
             self.level.reset_map()
             self.rect.right = self.level.rect.right
             
@@ -184,7 +187,7 @@ class Player(pygame.sprite.Sprite):
         # another screen to the right, you go to the screen to the right
         if self.rect.centerx > self.level.rect.right and self.level.adjacents["right"]:
             self.level = self.level.adjacents["right"]
-            level_sprite.add(self.level)
+            self.game.current_level = self.level
             self.level.reset_map()
             self.rect.left = self.level.rect.left
         
@@ -192,7 +195,7 @@ class Player(pygame.sprite.Sprite):
         # another screen above, you go to the screen above
         if self.rect.centery < self.level.rect.top and self.level.adjacents["up"]:
             self.level = self.level.adjacents["up"]
-            level_sprite.add(self.level)
+            self.game.current_level = self.level
             self.level.reset_map()
             self.rect.bottom = self.level.rect.bottom
             
@@ -200,7 +203,7 @@ class Player(pygame.sprite.Sprite):
         # another screen below, you go to the screen below
         if self.rect.centery > self.level.rect.bottom and self.level.adjacents["down"]:
             self.level = self.level.adjacents["down"]
-            level_sprite.add(self.level)
+            self.game.current_level = self.level
             self.level.reset_map()
             self.rect.top = self.level.rect.top
             

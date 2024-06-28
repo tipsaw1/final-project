@@ -1,8 +1,8 @@
 from settings import *
 
 class Collectable(pygame.sprite.Sprite):
-    def __init__(self, pos, size, image):
-        super().__init__(level_sprite.sprite.item_sprites)
+    def __init__(self, pos, size, image, game):
+        super().__init__(game.current_level.item_sprites)
         self.image = pygame.transform.scale(image, size)
         self.rect = self.image.get_rect(topleft = pos)
         
@@ -15,8 +15,8 @@ class Collectable(pygame.sprite.Sprite):
         self.kill()
     
 class Health_item(Collectable):
-    def __init__(self, pos, size, image):
-        super().__init__(pos, size, image)
+    def __init__(self, pos, size, image, game):
+        super().__init__(pos, size, image, game)
     
     def collect(self):
         player_sprite.sprite.hp += 15

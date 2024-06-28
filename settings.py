@@ -18,8 +18,6 @@ button_font = pygame.font.SysFont("impact", 100)
 
 # Player sprite accesible from any file
 player_sprite = pygame.sprite.GroupSingle()
-# Level sprite
-level_sprite = pygame.sprite.GroupSingle()
 
 # This function calculates the x and y values needed to move a specific distance at an angle
 # This prevents you from moving faster when moving diagonally (1 up and 1 to the right = √2 diagonally)

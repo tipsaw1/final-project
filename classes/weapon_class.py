@@ -3,7 +3,8 @@ import classes.bullet_class as bullet
 
 class Melee_weapon:
     # constructor
-    def __init__(self, damage, range, cooldown):
+    def __init__(self, damage, range, cooldown, game):
+        self.game = game
         self.damage = damage
         self.range = range
         self.attack_cooldown = cooldown
@@ -29,7 +30,7 @@ class Melee_weapon:
         if pygame.time.get_ticks() - self.last_attacked <= 200:
             player_sprite.sprite.slashing = True
             self.pos = pos
-            for sprite in level_sprite.sprite.enemy_sprites.sprites() + level_sprite.sprite.bullet_sprites.sprites():
+            for sprite in self.game.current_level.enemy_sprites.sprites() + self.game.current_level.bullet_sprites.sprites():
                 distance = pygame.math.Vector2(sprite.rect.center+pygame.math.Vector2(sprite.rect.width//2))
                 distance -= player_sprite.sprite.rect.center
                 total_distance_sq = distance.x**2 + distance.y**2
@@ -40,10 +41,10 @@ class Melee_weapon:
                         print("in range")
                     if target_angle in range(mouse_angle-90, mouse_angle+90):
                         print("in angle")
-                    if sprite in level_sprite.sprite.enemy_sprites and sprite not in self.hit:
+                    if sprite in self.game.current_level.enemy_sprites and sprite not in self.hit:
                         sprite.take_damage(self.damage)
                         self.hit.append(sprite)
-                    if sprite in level_sprite.sprite.bullet_sprites:
+                    if sprite in self.game.current_level.bullet_sprites:
                         sprite.kill()
                         
         if pygame.time.get_ticks() - self.last_attacked >= self.attack_cooldown:
@@ -51,17 +52,18 @@ class Melee_weapon:
             self.hit = []
             self.played = False
         #mouse_angle*=math.pi/180
-        #pygame.draw.line(pygame.display.get_surface(), "white",(player_sprite.sprite.rect.center-level_sprite.sprite.all_sprites.offset),(player_sprite.sprite.rect.centerx+(90*math.cos(mouse_angle-90))-level_sprite.sprite.all_sprites.offset.x, player_sprite.sprite.rect.centery+(90*math.sin(mouse_angle-90))-level_sprite.sprite.all_sprites.offset.y))
-        #pygame.draw.line(pygame.display.get_surface(), "white",(player_sprite.sprite.rect.center-level_sprite.sprite.all_sprites.offset),(player_sprite.sprite.rect.centerx+(90*math.cos(mouse_angle+90))-level_sprite.sprite.all_sprites.offset.x, player_sprite.sprite.rect.centery+(90*math.sin(mouse_angle+90))-level_sprite.sprite.all_sprites.offset.y))
-        #pygame.draw.line(pygame.display.get_surface(), "white", (player_sprite.sprite.rect.center-level_sprite.sprite.all_sprites.offset), (player_sprite.sprite.rect.centerx, player_sprite.sprite.rect.centery+self.range)-level_sprite.sprite.all_sprites.offset)    
-        #pygame.draw.line(pygame.display.get_surface(), "white",(player_sprite.sprite.rect.center-level_sprite.sprite.all_sprites.offset),(player_sprite.sprite.rect.centerx+(self.range*math.cos(mouse_angle))-level_sprite.sprite.all_sprites.offset.x, player_sprite.sprite.rect.centery+(self.range*math.sin(mouse_angle))-level_sprite.sprite.all_sprites.offset.y))
+        #pygame.draw.line(pygame.display.get_surface(), "white",(player_sprite.sprite.rect.center-self.game.current_level.all_sprites.offset),(player_sprite.sprite.rect.centerx+(90*math.cos(mouse_angle-90))-self.game.current_level.all_sprites.offset.x, player_sprite.sprite.rect.centery+(90*math.sin(mouse_angle-90))-self.game.current_level.all_sprites.offset.y))
+        #pygame.draw.line(pygame.display.get_surface(), "white",(player_sprite.sprite.rect.center-self.game.current_level.all_sprites.offset),(player_sprite.sprite.rect.centerx+(90*math.cos(mouse_angle+90))-self.game.current_level.all_sprites.offset.x, player_sprite.sprite.rect.centery+(90*math.sin(mouse_angle+90))-self.game.current_level.all_sprites.offset.y))
+        #pygame.draw.line(pygame.display.get_surface(), "white", (player_sprite.sprite.rect.center-self.game.current_level.all_sprites.offset), (player_sprite.sprite.rect.centerx, player_sprite.sprite.rect.centery+self.range)-self.game.current_level.all_sprites.offset)    
+        #pygame.draw.line(pygame.display.get_surface(), "white",(player_sprite.sprite.rect.center-self.game.current_level.all_sprites.offset),(player_sprite.sprite.rect.centerx+(self.range*math.cos(mouse_angle))-self.game.current_level.all_sprites.offset.x, player_sprite.sprite.rect.centery+(self.range*math.sin(mouse_angle))-self.game.current_level.all_sprites.offset.y))
                     
     
                 
 
 class Ranged_weapon:
     # constructor
-    def __init__(self, damage, cooldown):
+    def __init__(self, damage, cooldown, game):
+        self.game = game
         self.damage = damage
         self.attack_cooldown = cooldown
         self.last_attacked = -cooldown
@@ -70,14 +72,15 @@ class Ranged_weapon:
         
     def attack(self, pos):
         if pygame.time.get_ticks() - self.last_attacked >= self.attack_cooldown:
-            bullet.Bullet(level_sprite.sprite.enemy_sprites, player_sprite.sprite.rect.center, pos, self.damage, 25, img.arrow_img, (TILESIZE//2, TILESIZE//4))
+            bullet.Bullet(self.game.current_level.enemy_sprites, player_sprite.sprite.rect.center, pos, self.damage, 25, img.arrow_img, (TILESIZE//2, TILESIZE//4), self.game)
             self.last_attacked = pygame.time.get_ticks()
             self.sound.play()
             
         
         
 class Magic_weapon:
-    def __init__(self, damage, range, cooldown):
+    def __init__(self, damage, range, cooldown, game):
+        self.game = game
         self.range = range
         self.damage = damage
         self.attack_cooldown = cooldown
@@ -88,7 +91,7 @@ class Magic_weapon:
         
     def attack(self, pos):
         if pygame.time.get_ticks() - self.last_attacked >= self.attack_cooldown:
-            bullet.Flame(level_sprite.sprite.enemy_sprites, player_sprite.sprite.rect.center, pos, self.damage, 25, img.fireball_img, (TILESIZE//4,TILESIZE//4), self.range)
+            bullet.Flame(self.game.current_level.enemy_sprites, player_sprite.sprite.rect.center, pos, self.damage, 25, img.fireball_img, (TILESIZE//4,TILESIZE//4), self.range)
             self.last_attacked = pygame.time.get_ticks()
     
         

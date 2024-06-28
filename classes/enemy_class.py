@@ -2,8 +2,9 @@ from settings import *
 import classes.bullet_class as bullet
 import classes.collectable_class as collectable
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, level, pos, damage, hp, speed, size, current_animation):
+    def __init__(self, game, level, pos, damage, hp, speed, size, current_animation):
         super().__init__(level.enemy_sprites, level.all_sprites)
+        self.game = game
         self.level = level
         self.can_see_player = False
         self.attack_cooldown = 500
@@ -39,7 +40,7 @@ class Enemy(pygame.sprite.Sprite):
         self.check_borders()
         if self.hp <= 0:
             if random.choice((1, 2, 3)) == 2:
-                collectable.Health_item(self.rect.center, (10,10), img.health_item)
+                collectable.Health_item(self.rect.center, (10,10), img.health_item, self.game)
             self.kill()
             
         
@@ -184,8 +185,8 @@ class Enemy(pygame.sprite.Sprite):
     
 class Melee_enemy(Enemy):
     
-    def __init__(self, level, pos, damage, hp, speed, size):
-        super().__init__(level, pos, damage, hp, speed, size, img.skeleton_melee_idle_animation)
+    def __init__(self, game, level, pos, damage, hp, speed, size):
+        super().__init__(game, level, pos, damage, hp, speed, size, img.skeleton_melee_idle_animation)
         self.range = 75
         self.attack_animation = img.skeleton_melee_attack_animation
         self.idle_animation = img.skeleton_melee_idle_animation
@@ -232,8 +233,8 @@ class Melee_enemy(Enemy):
         self.draw_slash(pygame.display.get_surface())
         
 class Ranged_enemy(Enemy):
-    def __init__(self, level, pos, damage, hp, speed,size):
-        super().__init__(level, pos, damage, hp, speed, size, img.skeleton_archer_idle_animation)
+    def __init__(self, game, level, pos, damage, hp, speed,size):
+        super().__init__(game, level, pos, damage, hp, speed, size, img.skeleton_archer_idle_animation)
         self.evade_distance = SCREEN_H//2
         self.attack_animation = img.skeleton_archer_attack_animation
         self.idle_animation = img.skeleton_archer_idle_animation
@@ -245,7 +246,7 @@ class Ranged_enemy(Enemy):
         if self.can_see_player:
             if pygame.time.get_ticks() - self.last_attack >= self.attack_cooldown:
                 self.change_animation(self.attack_animation)
-                bullet.Bullet(player_sprite, self.rect.center, player_sprite.sprite.rect.center, self.damage, 10, img.arrow_img, (TILESIZE//2, TILESIZE//4))
+                bullet.Bullet(player_sprite, self.rect.center, player_sprite.sprite.rect.center, self.damage, 10, img.arrow_img, (TILESIZE//2, TILESIZE//4), self.game)
                 self.last_attack = pygame.time.get_ticks()
             
     def update(self):
@@ -271,8 +272,8 @@ class Ranged_enemy(Enemy):
             self.idle_movement()
         
 class Boss_enemy(Enemy):
-    def __init__(self, level, pos, damage, hp, speed,size):
-        super().__init__(level, pos, damage, hp, speed, size, img.skeleton_archer_idle_animation)
+    def __init__(self, game, level, pos, damage, hp, speed,size):
+        super().__init__(game, level, pos, damage, hp, speed, size, img.skeleton_archer_idle_animation)
         # Animations
         self.attack_animation = img.skeleton_archer_attack_animation
         self.idle_animation = img.skeleton_archer_idle_animation
@@ -358,7 +359,7 @@ class Boss_enemy(Enemy):
     def draw_wave_attack(self):
         self.wave_rect.center = self.rect.center
         surface = pygame.display.get_surface()
-        surface.blit(self.wave_img, self.wave_rect.topleft-level_sprite.sprite.all_sprites.offset)
+        surface.blit(self.wave_img, self.wave_rect.topleft-self.game.current_level.sprite.all_sprites.offset)
         distance = pygame.math.Vector2(player_sprite.sprite.rect.center)
         distance -= self.rect.center
         total_distance_sq = distance.x**2 + distance.y**2

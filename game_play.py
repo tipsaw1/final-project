@@ -5,14 +5,15 @@ game_over_rect = game_over_text.get_rect(center = (SCREEN_W//2-100, SCREEN_H//2)
 victory_text = button_font.render("YOU WIN!", True, "yellow")
 victory_rect = victory_text.get_rect(center = (SCREEN_W//2, SCREEN_H//2))
 dialogue_pause = False
-def play_game(surface):
-    level_sprite.update()
+def play_game(game):
+    
+    game.current_level.update()
 
-    level_sprite.sprite.all_sprites.update()
-    level_sprite.sprite.all_sprites.draw(surface)
+    game.current_level.all_sprites.update()
+    game.current_level.all_sprites.draw(game.screen)
     
     #Ensures dialogue is drawn on top
-    for npc in level_sprite.sprite.npc_sprites.sprites():
+    for npc in game.current_level.npc_sprites.sprites():
         if npc.displaying_dialogue:
             npc.dialogue.display_dialogue()
 

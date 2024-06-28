@@ -6,8 +6,11 @@ import classes.npc_class as npc
 
 # Different rooms/screens
 class Level(pygame.sprite.Sprite):    
-    def __init__(self, map_grid,):
+    def __init__(self, map_grid, game):
         super().__init__()
+        
+        #Stores game
+        self.game = game
         # Background image
         self.tile_images = (img.tile_1, img.tile_2, img.tile_3)
         # Stores the map grid that will be used to draw the screen
@@ -19,10 +22,6 @@ class Level(pygame.sprite.Sprite):
         
         #Player start position
         self.player_spawn = (SCREEN_W//2,SCREEN_H//2)
-        
-        # Puts current level into the level sprite group
-        # Level sprite is a GroupSingle()
-        level_sprite.add(self)
         
         # Stores all sprites in this room (including the player)
         self.all_sprites = OffsetGroup()
@@ -87,13 +86,13 @@ class Level(pygame.sprite.Sprite):
             npc.Npc(self, pos, TILESIZE, img.player_idle_animation, img.player_walk_animation, npc.Dialogue(["123", "abc", "do-re-mi"]))
         
         if letter == "!":
-            enemy.Melee_enemy(self, pos, 15, 30, 7, TILESIZE)
+            enemy.Melee_enemy(self.game, self, pos, 15, 30, 7, TILESIZE)
         
         if letter == ">":
-            enemy.Ranged_enemy(self, pos, 10, 20, 7, TILESIZE)
+            enemy.Ranged_enemy(self.game, self, pos, 10, 20, 7, TILESIZE)
             
         if letter == "B":
-            enemy.Boss_enemy(self, pos, 25, 500, 5, TILESIZE*2.5)
+            enemy.Boss_enemy(self.game, self, pos, 25, 500, 5, TILESIZE*2.5)
         
         if letter == "P":
             self.player_spawn = pos

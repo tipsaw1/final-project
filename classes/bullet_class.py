@@ -1,8 +1,9 @@
 from settings import *
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, target_group, start_pos, target_pos, damage, speed, image, size):
-        super().__init__(level_sprite.sprite.all_sprites, level_sprite.sprite.bullet_sprites)
+    def __init__(self, target_group, start_pos, target_pos, damage, speed, image, size, game):
+        super().__init__(game.current_level.all_sprites, game.current_level.bullet_sprites)
+        self.game = game
         self.target_group = target_group
         self.damage = damage
         x_distance = target_pos[0] - start_pos[0]
@@ -20,11 +21,11 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.move_ip(self.dx, self.dy)
         
     def check_collisions(self):
-        collisions = pygame.sprite.spritecollide(self, level_sprite.sprite.all_sprites, False)
+        collisions = pygame.sprite.spritecollide(self, self.game.current_level.all_sprites, False)
         
         for collision in collisions:
             if collision != self:
-                if collision in level_sprite.sprite.obstacle_sprites:
+                if collision in self.game.current_level.obstacle_sprites:
                     self.kill()
                     break
                 elif collision in self.target_group:
@@ -55,11 +56,11 @@ class Flame(Bullet):
             
     def check_collisions(self):
         
-        collisions = pygame.sprite.spritecollide(self, level_sprite.sprite.all_sprites, False)
+        collisions = pygame.sprite.spritecollide(self, self.game.current_level.all_sprites, False)
         
         for collision in collisions:
             if collision != self:
-                if collision in level_sprite.sprite.obstacle_sprites:
+                if collision in self.game.current_level.obstacle_sprites:
                     self.kill()
                     break
                 elif collision in self.target_group:
