@@ -1,10 +1,12 @@
-from settings import *
+import game_class
+import settings, pygame
 
 def draw_ui(game):
-    draw_health(game, (player_sprite.sprite.rect.centerx-25, player_sprite.sprite.rect.top-15)-game.current_level.all_sprites.offset)
+    draw_health(game, (game_class.main_game.player.rect.centerx-25, game_class.main_game.player.rect.top-15)-game.current_level.all_sprites.offset)
     
     
 def draw_health(game, pos):
-    game.screen.blit(img.health_bar_back, pos)
-    game.screen.blit(img.health_bar_front, pos)
-    img.health_bar_front = pygame.transform.scale(img.health_bar_front, (max(player_sprite.sprite.health_percent*50, 0),10))
+    game.screen.blit(settings.img.health_bar_back, pos)
+    game.screen.blit(settings.img.health_bar_front, pos)
+    settings.img.health_bar_front = pygame.transform.scale(settings.img.health_bar_front, (max(game_class.main_game.player.health_percent*50, 0),10))
+    

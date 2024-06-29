@@ -1,10 +1,10 @@
-from settings import *
+import settings
+import pygame, random, math
 import classes.bullet_class as bullet
 import classes.collectable_class as collectable
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, game, level, pos, damage, hp, speed, size, current_animation):
+    def __init__(self, level, pos, damage, hp, speed, size, animations):
         super().__init__(level.enemy_sprites, level.all_sprites)
-        self.game = game
         self.level = level
         self.can_see_player = False
         self.attack_cooldown = 500
@@ -18,11 +18,11 @@ class Enemy(pygame.sprite.Sprite):
         #Animations
         self.animation_frame = 0
         self.animation_speed = 0.1
-        self.idle_animation = img.skeleton_melee_idle_animation
-        self.walk_animation = img.skeleton_melee_walk_animation
-        self.hurt_animation = img.skeleton_melee_hurt_animation
-        self.attack_animation = img.skeleton_melee_attack_animation
-        self.current_animation = current_animation
+        self.idle_animation = animations[0]
+        self.walk_animation = animations[1]
+        self.hurt_animation = animations[2]
+        self.attack_animation = animations[3]
+        self.current_animation = self.idle_animation
         self.image = self.current_animation[self.animation_frame]
         
         self.size = size
@@ -40,7 +40,7 @@ class Enemy(pygame.sprite.Sprite):
         self.check_borders()
         if self.hp <= 0:
             if random.choice((1, 2, 3)) == 2:
-                collectable.Health_item(self.rect.center, (10,10), img.health_item, self.game)
+                collectable.Health_item(self.rect.center, (10,10), settings.img.health_item, self.level.game)
             self.kill()
             
         
@@ -52,6 +52,7 @@ class Enemy(pygame.sprite.Sprite):
         self.image = self.current_animation[int(self.animation_frame)]
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         self.rect = self.image.get_rect(topleft = self.rect.topleft)
+        
         if self.current_animation == self.hurt_animation or self.current_animation == self.attack_animation:
             self.animation_speed = 0.3
         else:
@@ -69,8 +70,8 @@ class Enemy(pygame.sprite.Sprite):
     
     def change_animation(self, animation, reset_frames = False):
         self.current_animation = animation
-        if self.animation_frame > len(self.current_animation):
-            self.animation_frame = len(self.current_animation)
+        if self.animation_frame >= len(self.current_animation):
+            self.animation_frame = len(self.current_animation)-1
         
         if reset_frames:
             self.animation_frame = 0
@@ -89,26 +90,26 @@ class Enemy(pygame.sprite.Sprite):
     def check_line_of_sight(self):
         self.can_see_player = True
         for obstacle in self.level.obstacle_sprites:
-            if obstacle.rect.clipline((self.rect.center, player_sprite.sprite.rect.center)):
+            if obstacle.rect.clipline((self.rect.center, self.level.game.player.rect.center)):
                 self.can_see_player = False
         
     def draw_line_of_sight(self):
         if self.can_see_player:
-            pygame.draw.line(pygame.display.get_surface(), "red", self.rect.center-self.level.all_sprites.offset, player_sprite.sprite.rect.center-self.level.all_sprites.offset)
+            pygame.draw.line(pygame.display.get_surface(), "red", self.rect.center-self.level.all_sprites.offset, self.level.game.player.rect.center-self.level.all_sprites.offset)
         else:
-            pygame.draw.line(pygame.display.get_surface(), "white", self.rect.center-self.level.all_sprites.offset, player_sprite.sprite.rect.center-self.level.all_sprites.offset)
+            pygame.draw.line(pygame.display.get_surface(), "white", self.rect.center-self.level.all_sprites.offset, self.level.game.player.rect.center-self.level.all_sprites.offset)
     
     def movement_pattern(self):
         if self.can_see_player:
             distance = pygame.math.Vector2(self.rect.center)
-            distance = player_sprite.sprite.rect.center - distance
-            self.dx, self.dy = calculate_movement(distance.x, distance.y, self.speed)
+            distance = self.level.game.player.rect.center - distance
+            self.dx, self.dy = settings.calculate_movement(distance.x, distance.y, self.speed)
         else:
             self.idle_movement()
     
     def move(self):
         self.movement_pattern()
-        if self.current_animation == self.hurt_animation and player_sprite.sprite.player_class != "mage":
+        if self.current_animation == self.hurt_animation and self.level.game.player.player_class != "mage":
             self.dx, self.dy = 0, 0
         self.rect.x += self.dx
         self.collide("x")
@@ -123,7 +124,7 @@ class Enemy(pygame.sprite.Sprite):
         turn = False
         # If you are colliding with something that isn't yourself
         for collision in collisions:
-            if collision != self and collision not in player_sprite and collision not in self.level.bullet_sprites:
+            if collision != self and collision != self.level.game.player and collision not in self.level.bullet_sprites:
                 
                 if direction == "x":
                     if self.dx > 0:
@@ -165,13 +166,13 @@ class Enemy(pygame.sprite.Sprite):
             
     
     def damage_player(self):
-        player_sprite.sprite.take_damage(self.damage)
+        self.level.game.player.take_damage(self.damage)
         self.change_animation(self.attack_animation)
     # Movement pattern will be based on subclasses
             
     def in_attack_range(self):
-        x_d = player_sprite.sprite.rect.centerx - self.rect.centerx
-        y_d = player_sprite.sprite.rect.centery - self.rect.centery
+        x_d = self.level.game.player.rect.centerx - self.rect.centerx
+        y_d = self.level.game.player.rect.centery - self.rect.centery
         t_d = (x_d**2 + y_d**2)**0.5
         if t_d <= self.range:
             return True
@@ -185,24 +186,19 @@ class Enemy(pygame.sprite.Sprite):
     
 class Melee_enemy(Enemy):
     
-    def __init__(self, game, level, pos, damage, hp, speed, size):
-        super().__init__(game, level, pos, damage, hp, speed, size, img.skeleton_melee_idle_animation)
+    def __init__(self, level, pos, damage, hp, speed, size, animations):
+        super().__init__(level, pos, damage, hp, speed, size, animations)
         self.range = 75
-        self.attack_animation = img.skeleton_melee_attack_animation
-        self.idle_animation = img.skeleton_melee_idle_animation
-        self.hurt_animation = img.skeleton_melee_hurt_animation
-        self.walk_animation = img.skeleton_melee_walk_animation
-        self.current_animation = self.idle_animation
         
     def draw_slash(self, surface):
         if pygame.time.get_ticks() - self.last_attack >= 200:
             distance = pygame.math.Vector2(self.rect.center)
-            distance = player_sprite.sprite.rect.center - distance
+            distance = self.level.game.player.rect.center - distance
             angle = math.atan2(distance.y, distance.x)
             angle *= -180/math.pi
-            image = pygame.transform.scale(img.slash_img, (self.rect.width, self.rect.width))
+            image = pygame.transform.scale(settings.img.slash_img, (self.rect.width, self.rect.width))
             image = pygame.transform.rotate(image, angle)
-            dx, dy = calculate_movement(distance.x, distance.y, self.rect.width/2)
+            dx, dy = settings.calculate_movement(distance.x, distance.y, self.rect.width/2)
             image_rect = image.get_rect(center = (self.rect.centerx + dx, self.rect.centery + dy))
             pos = pygame.math.Vector2(image_rect.x, image_rect.y)
             pos -= self.level.all_sprites.offset
@@ -215,13 +211,13 @@ class Melee_enemy(Enemy):
             
     def movement_pattern(self):
         distance = pygame.math.Vector2(self.rect.center)
-        distance = player_sprite.sprite.rect.center - distance
+        distance = self.level.game.player.rect.center - distance
         total_distance_sq = distance.x**2 + distance.y**2
         angle = math.atan2(distance.y, distance.x)
         if self.can_see_player:
             self.idle = False
             if total_distance_sq > (self.range-20)**2:
-                self.dx, self.dy = calculate_movement(distance.x, distance.y, self.speed)
+                self.dx, self.dy = settings.calculate_movement(distance.x, distance.y, self.speed)
             else:
                 self.dx, self.dy = 0,0
         else:   
@@ -233,20 +229,15 @@ class Melee_enemy(Enemy):
         self.draw_slash(pygame.display.get_surface())
         
 class Ranged_enemy(Enemy):
-    def __init__(self, game, level, pos, damage, hp, speed,size):
-        super().__init__(game, level, pos, damage, hp, speed, size, img.skeleton_archer_idle_animation)
-        self.evade_distance = SCREEN_H//2
-        self.attack_animation = img.skeleton_archer_attack_animation
-        self.idle_animation = img.skeleton_archer_idle_animation
-        self.hurt_animation = img.skeleton_archer_hurt_animation
-        self.walk_animation = img.skeleton_archer_walk_animation
-        self.current_animation = self.idle_animation
+    def __init__(self, level, pos, damage, hp, speed, size, animations):
+        super().__init__(level, pos, damage, hp, speed, size, animations)
+        self.evade_distance = self.level.game.SCREEN_H//2
         
     def shoot(self):
         if self.can_see_player:
             if pygame.time.get_ticks() - self.last_attack >= self.attack_cooldown:
                 self.change_animation(self.attack_animation)
-                bullet.Bullet(player_sprite, self.rect.center, player_sprite.sprite.rect.center, self.damage, 10, img.arrow_img, (TILESIZE//2, TILESIZE//4), self.game)
+                bullet.Bullet(self.level.game.player_group, self.rect.center, self.level.game.player.rect.center, self.damage, 10, settings.img.arrow_img, (self.level.game.TILESIZE//2, self.level.game.TILESIZE//4), self.level.game)
                 self.last_attack = pygame.time.get_ticks()
             
     def update(self):
@@ -255,15 +246,15 @@ class Ranged_enemy(Enemy):
         
     def movement_pattern(self):
         distance = pygame.math.Vector2(self.rect.center)
-        distance = player_sprite.sprite.rect.center - distance
+        distance = self.level.game.player.rect.center - distance
         total_distance_sq = distance.x**2 + distance.y**2
         angle = math.atan2(distance.y, distance.x)
         if self.can_see_player:
             self.idle = False
             if total_distance_sq < self.evade_distance**2:
-                self.dx, self.dy = calculate_movement(distance.x, distance.y, -self.speed)
+                self.dx, self.dy = settings.calculate_movement(distance.x, distance.y, -self.speed)
             elif total_distance_sq > (self.evade_distance+50)**2:
-                self.dx, self.dy = calculate_movement(distance.x, distance.y, self.speed)
+                self.dx, self.dy = settings.calculate_movement(distance.x, distance.y, self.speed)
             else:
                 self.dx = self.direction_modifier*(total_distance_sq**0.5)*(math.cos(angle+math.pi/180)-math.cos(angle))
                 self.dy = self.direction_modifier*(total_distance_sq**0.5)*(math.sin(angle+math.pi/180)-math.sin(angle))
@@ -272,14 +263,8 @@ class Ranged_enemy(Enemy):
             self.idle_movement()
         
 class Boss_enemy(Enemy):
-    def __init__(self, game, level, pos, damage, hp, speed,size):
-        super().__init__(game, level, pos, damage, hp, speed, size, img.skeleton_archer_idle_animation)
-        # Animations
-        self.attack_animation = img.skeleton_archer_attack_animation
-        self.idle_animation = img.skeleton_archer_idle_animation
-        self.hurt_animation = img.skeleton_archer_hurt_animation
-        self.walk_animation = img.skeleton_archer_walk_animation
-        self.current_animation = self.idle_animation
+    def __init__(self, level, pos, damage, hp, speed, size, animations):
+        super().__init__(level, pos, damage, hp, speed, size, animations)
         
         
         # Attacks
@@ -290,7 +275,7 @@ class Boss_enemy(Enemy):
         self.wave_attacking = False
         self.wave_attack_update_rate = 50
         self.last_wave_attack_update = 0
-        self.wave_img = pygame.transform.scale(img.wave_attack_img, (self.rect.width, self.rect.width))
+        self.wave_img = pygame.transform.scale(settings.img.wave_attack_img, (self.rect.width, self.rect.width))
         self.wave_rect = self.wave_img.get_rect()
         
         # Dash
@@ -306,7 +291,7 @@ class Boss_enemy(Enemy):
         #self.rect.center = self.level.rect.center
         self.attack_cycle()
         if not self.alive():
-            player_sprite.sprite.victory = True
+            self.level.game.player.victory = True
         
         
     def idle_movement(self):
@@ -315,7 +300,7 @@ class Boss_enemy(Enemy):
         
     def attack_cycle(self):
         if pygame.time.get_ticks() - self.last_attack >= self.attack_cooldown:
-            distance = pygame.math.Vector2(player_sprite.sprite.rect.center)
+            distance = pygame.math.Vector2(self.level.game.player.rect.center)
             distance -= self.rect.center
             if not self.dashing:
                 self.far_attack()
@@ -332,7 +317,7 @@ class Boss_enemy(Enemy):
     def far_attack(self):
         self.attack_cooldown = 100
         self.change_animation(self.attack_animation)
-        bullet.Bullet(player_sprite, self.rect.center, player_sprite.sprite.rect.center, self.damage, 20, img.arrow_img, (TILESIZE//2, TILESIZE//4))
+        bullet.Bullet(self.level.game.player_group, self.rect.center, self.level.game.player.rect.center, self.damage, 20, settings.img.arrow_img, (self.level.game.TILESIZE//2, self.level.game.TILESIZE//4))
         
     def close_attack(self):
         self.attack_cooldown = self.default_attack_cooldown
@@ -348,19 +333,19 @@ class Boss_enemy(Enemy):
         self.wave_rect = self.wave_img.get_rect()
         self.wave_rect.center = self.rect.center
         self.last_wave_attack_update = pygame.time.get_ticks()
-        if self.wave_rect.width >= 3*SCREEN_H//4:
+        if self.wave_rect.width >= 3*self.level.game.SCREEN_H//4:
             self.end_wave_attack()
             
     def end_wave_attack(self):
             self.wave_attacking = False
-            self.wave_img = pygame.transform.scale(img.wave_attack_img, (self.rect.width//2, self.rect.height//2))
+            self.wave_img = pygame.transform.scale(settings.img.wave_attack_img, (self.rect.width//2, self.rect.height//2))
             self.wave_rect = self.wave_img.get_rect()
             
     def draw_wave_attack(self):
         self.wave_rect.center = self.rect.center
         surface = pygame.display.get_surface()
-        surface.blit(self.wave_img, self.wave_rect.topleft-self.game.current_level.sprite.all_sprites.offset)
-        distance = pygame.math.Vector2(player_sprite.sprite.rect.center)
+        surface.blit(self.wave_img, self.wave_rect.topleft-self.level.game.current_level.sprite.all_sprites.offset)
+        distance = pygame.math.Vector2(self.level.game.player.rect.center)
         distance -= self.rect.center
         total_distance_sq = distance.x**2 + distance.y**2
         radius = self.wave_rect.width//2
@@ -373,15 +358,15 @@ class Boss_enemy(Enemy):
     
     def movement_pattern(self):
         distance = pygame.math.Vector2(self.rect.center)
-        distance = player_sprite.sprite.rect.center - distance
+        distance = self.level.game.player.rect.center - distance
         if not self.dashing:
-            self.dx, self.dy = calculate_movement(distance.x, distance.y, self.speed)
+            self.dx, self.dy = settings.calculate_movement(distance.x, distance.y, self.speed)
         self.dash()
         
             
     def dash(self):
         distance = pygame.math.Vector2(self.rect.center)
-        distance = player_sprite.sprite.rect.center - distance
+        distance = self.level.game.player.rect.center - distance
         elapsed_time = pygame.time.get_ticks() - self.last_dashed
         if elapsed_time >= self.dash_timer:
             if not self.dashing:
@@ -390,7 +375,7 @@ class Boss_enemy(Enemy):
             
         if elapsed_time >= self.dash_timer+300:
             if not self.dashing:
-                self.dx, self.dy = calculate_movement(distance.x, distance.y, 5*self.speed)
+                self.dx, self.dy = settings.calculate_movement(distance.x, distance.y, 5*self.speed)
                 self.dashing = True
         
         if elapsed_time >= self.dash_timer+800:

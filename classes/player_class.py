@@ -1,13 +1,10 @@
-from settings import *
+import settings, pygame, math
 import classes.bullet_class as bullet
 
 class Player(pygame.sprite.Sprite):
     # Equipped items are by default none
     equipped_weapon = None
     equipped_armor = None
-    
-    # Size is half a tile
-    size = 3.2*TILESIZE//4
     
     # Animation frame is 0
     animation_frame = 0
@@ -29,13 +26,16 @@ class Player(pygame.sprite.Sprite):
     victory = False
     
     def __init__(self, game):
-        super().__init__(player_sprite)
+        super().__init__(game.player_group)
+    
+        # Size is half a tile
+        self.size = 3.2*game.TILESIZE//4
         # Animation [left, right]
-        self.idle_animation = [img.archer_idle_animation_left, img.archer_idle_animation_right]
-        self.walk_animation = [img.archer_walk_animation_left, img.archer_walk_animation_right]
-        self.attack_animation = [img.archer_attack_animation_left, img.archer_attack_animation_right]
-        self.hurt_animation = [img.archer_hurt_animation_left, img.archer_hurt_animation_right]
-        self.dead_image = [img.archer_death_left, img.archer_death_right]
+        self.idle_animation = [settings.img.archer_idle_animation_left, settings.img.archer_idle_animation_right]
+        self.walk_animation = [settings.img.archer_walk_animation_left, settings.img.archer_walk_animation_right]
+        self.attack_animation = [settings.img.archer_attack_animation_left, settings.img.archer_attack_animation_right]
+        self.hurt_animation = [settings.img.archer_hurt_animation_left, settings.img.archer_hurt_animation_right]
+        self.dead_image = [settings.img.archer_death_left, settings.img.archer_death_right]
         
         self.current_animation = self.idle_animation
         
@@ -82,9 +82,9 @@ class Player(pygame.sprite.Sprite):
                 distance = mousePos - distance
                 
                 angle = math.atan2(distance.y, distance.x)*-180/math.pi
-                image = pygame.transform.scale(img.slash_img, (self.equipped_weapon.range+self.rect.width, self.equipped_weapon.range+self.rect.width))
+                image = pygame.transform.scale(settings.img.slash_img, (self.equipped_weapon.range+self.rect.width, self.equipped_weapon.range+self.rect.width))
                 image = pygame.transform.rotate(image, angle)
-                dx, dy = calculate_movement(distance.x, distance.y, self.rect.width/2)
+                dx, dy = settings.calculate_movement(distance.x, distance.y, self.rect.width/2)
                 image_rect = image.get_rect(center = (self.rect.centerx + dx, self.rect.centery + dy))
                 
                 pos = pygame.math.Vector2(image_rect.x, image_rect.y)
@@ -125,15 +125,15 @@ class Player(pygame.sprite.Sprite):
                     npc.displaying_dialogue = False
                 
         
-        if offset_mouseX < player_sprite.sprite.rect.centerx:
+        if offset_mouseX < self.rect.centerx:
             self.facing = 0
-        if offset_mouseX > player_sprite.sprite.rect.centerx:
+        if offset_mouseX > self.rect.centerx:
             self.facing = 1
             
     def move(self):
         # Moves the player
         if self.dx != 0 or self.dy != 0:
-            self.dx, self.dy = calculate_movement(self.dx, self.dy, self.speed)
+            self.dx, self.dy = settings.calculate_movement(self.dx, self.dy, self.speed)
             if self.current_animation != self.hurt_animation: # add "and self.current_animation != self.attack_animation" to attack when moving
                 self.change_animation(self.walk_animation)
         else:

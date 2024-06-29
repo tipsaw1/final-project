@@ -1,4 +1,4 @@
-from settings import *
+import settings, pygame
 
 class Button():
   def __init__(self, font, text, text_color, collide_color, pos, size, width, group):

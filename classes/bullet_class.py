@@ -1,4 +1,4 @@
-from settings import *
+import settings, pygame, math, random
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, target_group, start_pos, target_pos, damage, speed, image, size, game):
@@ -11,7 +11,7 @@ class Bullet(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(image, (size[0], size[1]))
         self.image = pygame.transform.rotate(self.image, math.atan2(-y_distance, x_distance)*180/math.pi)
         self.rect = image.get_rect(center = start_pos)
-        self.dx, self.dy = calculate_movement(x_distance, y_distance, speed)
+        self.dx, self.dy = settings.calculate_movement(x_distance, y_distance, speed)
         
     def update(self):
         self.move()
@@ -34,8 +34,8 @@ class Bullet(pygame.sprite.Sprite):
                     break
                 
 class Flame(Bullet):
-    def __init__(self, target_group, start_pos, target_pos, damage, speed, image, size, range):
-        super().__init__(target_group, start_pos, target_pos, damage, speed, image, size)
+    def __init__(self, target_group, start_pos, target_pos, damage, speed, image, size, range, game):
+        super().__init__(target_group, start_pos, target_pos, damage, speed, image, size, game)
         self.range = range
         distance = pygame.math.Vector2(target_pos)
         distance -= self.rect.center
@@ -49,7 +49,7 @@ class Flame(Bullet):
     def update(self):
         super().update()
         distance = pygame.math.Vector2(self.rect.center)
-        distance -= player_sprite.sprite.rect.center
+        distance -= self.game.player.rect.center
         total_distance_sq = distance.x**2 + distance.y**2
         if abs(total_distance_sq) >= self.range**2:
             self.kill()

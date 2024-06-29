@@ -1,24 +1,40 @@
-from settings import *
-from setup import *
-import game_class
-import menu_screens
-import game_play
-import ui
-main_game = game_class.game()
+import game_class, pygame, menu_screens, game_play, ui
+pygame.init()
 
-pygame.event.set_grab(True)
-running = True
-while not main_game.quit:
+clock = pygame.time.Clock()
+
+while not game_class.main_game.quit:
       
     for event in pygame.event.get():    
         if event.type == pygame.QUIT:
-            main_game.quit = True
+            game_class.main_game.quit = True
 
-        main_game.check_events(event)
-    
-    main_game.gameplay()
+        menu_screens.check_events(game_class.main_game, event)
+
+    # Gameplay
+    if game_class.main_game.paused:
+      menu_screens.pause_screen(game_class.main_game)
+      
+    elif game_class.main_game.current_screen == "start":
+      menu_screens.start_screen(game_class.main_game)
+      
+    elif game_class.main_game.current_screen == "class":
+      menu_screens.class_select_screen(game_class.main_game)
+      
+    elif game_class.main_game.current_screen == "gameplay":
+      game_play.play_game(game_class.main_game)
+      ui.draw_ui(game_class.main_game)
+      
+    elif game_class.main_game.current_screen == "gameover":
+      game_play.game_over(game_class.main_game.screen)
+      
+    elif game_class.main_game.current_screen == "gamewon":
+      game_play.victory(game_class.main_game.screen)
     
     pygame.display.flip()
-    clock.tick(main_game.FPS)
+    clock.tick(game_class.main_game.FPS)
     
 pygame.quit()
+
+
+  

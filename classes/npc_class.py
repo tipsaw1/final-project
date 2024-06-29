@@ -1,4 +1,5 @@
-from settings import *
+import game_class, pygame
+
 
 class Npc(pygame.sprite.Sprite):
   def __init__(self, level, pos, size, idle_animation, talking_animation, dialogue):
@@ -53,8 +54,8 @@ class Dialogue:
     self.current_dialogue = 0
     self.font = pygame.font.Font(None, 64)
     self.render = self.font.render(self.dialogue_list[self.current_dialogue], True, "white")
-    self.rect = pygame.Rect(SCREEN_W//8, 0, 6*SCREEN_W//8, SCREEN_H//4)
-    self.rect.bottom = SCREEN_H - 50
+    self.rect = pygame.Rect(game_class.main_game.SCREEN_W//8, 0, 6*game_class.main_game.SCREEN_W//8, game_class.main_game.SCREEN_H//4)
+    self.rect.bottom = game_class.main_game.SCREEN_H - 50
       
   def display_dialogue(self):
     surface = pygame.display.get_surface()
